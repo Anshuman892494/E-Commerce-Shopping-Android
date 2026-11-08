@@ -82,12 +82,5 @@ app.use(errorHandler);
 
 // Start listening on 0.0.0.0
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`=======================================================`);
-  console.log(`🚀 Algions E-Commerce Backend Server running on port ${PORT}`);
-  console.log(`   - Architecture: Modular Express (Config/Routes/Controllers/Models)`);
-  console.log(`   - Storage Engine: MongoDB (Mongoose ODM)`);
-  console.log(`   - Secure Key: ${SECURE_API_KEY}`);
-  console.log(`   - Local:    http://localhost:${PORT}/api/products`);
-  console.log(`   - Android:  http://10.0.2.2:${PORT}/api/products`);
-  console.log(`=======================================================`);
+  console.log(`Backend Server running on port ${PORT}`);
 });
