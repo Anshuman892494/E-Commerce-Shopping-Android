@@ -1,5 +1,6 @@
 package e_commerce_app.com.ui.navigation
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -86,6 +87,7 @@ fun AppNavigation(
     val showBottomBar = currentRoute in bottomNavTabs.map { it.route }
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (showBottomBar) {
                 NavigationBar(
@@ -141,7 +143,7 @@ fun AppNavigation(
         NavHost(
             navController = navController,
             startDestination = Screen.Splash.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         ) {
             // --- 0. Splash Screen ---
             composable(Screen.Splash.route) {
