@@ -54,15 +54,21 @@ fun CatalogScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = "Algions",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.headlineMedium.copy(
+                                    fontSize = 26.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    letterSpacing = (-0.5).sp
+                                ),
                                 color = MaterialTheme.colorScheme.primary
                             )
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "Store",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Medium,
+                                style = MaterialTheme.typography.headlineMedium.copy(
+                                    fontSize = 26.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = (-0.5).sp
+                                ),
                                 color = OrangeCTA
                             )
                         }
