@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -18,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.contentDescription
@@ -61,12 +63,11 @@ fun CatalogScreen(
                                 text = "Store",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.secondary
+                                color = OrangeCTA
                             )
                         }
                     },
                     actions = {
-                        // Cart Action with Badge
                         IconButton(
                             onClick = onCartClick,
                             modifier = Modifier
@@ -77,7 +78,7 @@ fun CatalogScreen(
                                 badge = {
                                     if (cartItemCount > 0) {
                                         Badge(
-                                            containerColor = MaterialTheme.colorScheme.secondary,
+                                            containerColor = OrangeCTA,
                                             contentColor = Color.White
                                         ) {
                                             Text(text = "$cartItemCount")
@@ -158,28 +159,28 @@ fun CatalogScreen(
                             DropdownMenuItem(
                                 text = { Text("Default") },
                                 onClick = {
-                                    viewModel.setSort(null)
+                                    viewModel.selectSort(null)
                                     showSortMenu = false
                                 }
                             )
                             DropdownMenuItem(
                                 text = { Text("Price: Low to High") },
                                 onClick = {
-                                    viewModel.setSort("price_asc")
+                                    viewModel.selectSort("price_asc")
                                     showSortMenu = false
                                 }
                             )
                             DropdownMenuItem(
                                 text = { Text("Price: High to Low") },
                                 onClick = {
-                                    viewModel.setSort("price_desc")
+                                    viewModel.selectSort("price_desc")
                                     showSortMenu = false
                                 }
                             )
                             DropdownMenuItem(
                                 text = { Text("Top Rated") },
                                 onClick = {
-                                    viewModel.setSort("rating")
+                                    viewModel.selectSort("rating")
                                     showSortMenu = false
                                 }
                             )
@@ -189,7 +190,7 @@ fun CatalogScreen(
 
                 // Category Filter Chips
                 LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(uiState.categories) { category ->
@@ -251,9 +252,16 @@ fun CatalogScreen(
                         verticalArrangement = Arrangement.spacedBy(14.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
+                        // Promo Banner spanning full 2 columns
+                        item(span = { GridItemSpan(2) }) {
+                            PromoBanner()
+                        }
+
                         items(uiState.products, key = { it.id }) { product ->
                             ProductCard(
                                 product = product,
+                                isWishlisted = uiState.wishlistedIds.contains(product.id),
+                                onToggleWishlist = { viewModel.toggleWishlist(product) },
                                 onClick = { onProductClick(product.id) }
                             )
                         }
@@ -265,8 +273,72 @@ fun CatalogScreen(
 }
 
 @Composable
+fun PromoBanner() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 6.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
+                            OrangeCTA
+                        )
+                    )
+                )
+                .padding(16.dp)
+        ) {
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = Color.White.copy(alpha = 0.25f)
+                    ) {
+                        Text(
+                            text = "SPRING OFFER",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Coupon: ALGIONS20",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Get 20% OFF on all items!",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = Color.White
+                )
+
+                Text(
+                    text = "Apply code at checkout • Free 4-day shipping over $100",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.9f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun ProductCard(
     product: Product,
+    isWishlisted: Boolean,
+    onToggleWishlist: () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -283,7 +355,7 @@ fun ProductCard(
             }
     ) {
         Column {
-            // Image with Stock Badge Overlay
+            // Image with Stock Badge Overlay & Wishlist Heart Button
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -304,6 +376,23 @@ fun ProductCard(
                         .align(Alignment.TopEnd)
                         .padding(8.dp)
                 )
+
+                // Heart Wishlist toggle overlay
+                IconButton(
+                    onClick = onToggleWishlist,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(4.dp)
+                        .size(36.dp)
+                        .background(Color.Black.copy(alpha = 0.35f), shape = CircleShape)
+                ) {
+                    Icon(
+                        imageVector = if (isWishlisted) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Save to Wishlist",
+                        tint = if (isWishlisted) Color(0xFFEF4444) else Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
 
             // Product Details

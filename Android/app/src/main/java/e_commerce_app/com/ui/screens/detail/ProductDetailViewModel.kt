@@ -2,10 +2,12 @@ package e_commerce_app.com.ui.screens.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import e_commerce_app.com.data.model.CartItem
 import e_commerce_app.com.data.model.Product
 import e_commerce_app.com.data.remote.NetworkResult
 import e_commerce_app.com.data.repository.CartRepository
 import e_commerce_app.com.data.repository.ProductRepository
+import e_commerce_app.com.data.repository.WishlistRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -16,13 +18,15 @@ data class ProductDetailUiState(
     val quantity: Int = 1,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val isAddedToCart: Boolean = false
+    val isAddedToCart: Boolean = false,
+    val isWishlisted: Boolean = false
 )
 
 class ProductDetailViewModel(
     private val productId: String,
     private val productRepository: ProductRepository,
-    private val cartRepository: CartRepository
+    private val cartRepository: CartRepository,
+    private val wishlistRepository: WishlistRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProductDetailUiState())
@@ -30,6 +34,12 @@ class ProductDetailViewModel(
 
     init {
         loadProduct()
+        viewModelScope.launch {
+            wishlistRepository.wishlist.collect { list ->
+                val wishlisted = list.any { it.id == productId }
+                _uiState.update { it.copy(isWishlisted = wishlisted) }
+            }
+        }
     }
 
     fun loadProduct() {
@@ -38,15 +48,17 @@ class ProductDetailViewModel(
             when (val result = productRepository.getProductById(productId)) {
                 is NetworkResult.Success -> {
                     val p = result.data
-                    val defaultColor = p.variants.colors.firstOrNull()?.name
-                    val defaultSize = p.variants.sizes.firstOrNull()
+                    val defaultColor = p.variants?.colors?.firstOrNull()?.name
+                    val defaultSize = p.variants?.sizes?.firstOrNull()
+                    val isWishlisted = wishlistRepository.isInWishlist(p.id)
                     _uiState.update {
                         it.copy(
                             product = p,
                             selectedColor = defaultColor,
                             selectedSize = defaultSize,
                             quantity = if (p.stock > 0) 1 else 0,
-                            isLoading = false
+                            isLoading = false,
+                            isWishlisted = isWishlisted
                         )
                     }
                 }
@@ -65,6 +77,12 @@ class ProductDetailViewModel(
         }
     }
 
+    fun toggleWishlist() {
+        _uiState.value.product?.let { product ->
+            wishlistRepository.toggleWishlist(product)
+        }
+    }
+
     fun selectColor(color: String) {
         _uiState.update { it.copy(selectedColor = color) }
     }
@@ -74,39 +92,34 @@ class ProductDetailViewModel(
     }
 
     fun incrementQuantity() {
-        val current = _uiState.value
-        val maxStock = current.product?.stock ?: 1
-        if (current.quantity < maxStock) {
-            _uiState.update { it.copy(quantity = it.quantity + 1) }
+        val current = _uiState.value.quantity
+        val max = _uiState.value.product?.stock ?: 1
+        if (current < max) {
+            _uiState.update { it.copy(quantity = current + 1) }
         }
     }
 
     fun decrementQuantity() {
-        val current = _uiState.value
-        if (current.quantity > 1) {
-            _uiState.update { it.copy(quantity = it.quantity - 1) }
+        val current = _uiState.value.quantity
+        if (current > 1) {
+            _uiState.update { it.copy(quantity = current - 1) }
         }
     }
 
-    fun addToCart(): Boolean {
-        val current = _uiState.value
-        val prod = current.product ?: return false
-        if (prod.stock <= 0) return false
+    fun addToCart() {
+        val p = _uiState.value.product ?: return
+        if (p.stock <= 0) return
 
-        val success = cartRepository.addToCart(
-            product = prod,
-            selectedColor = current.selectedColor,
-            selectedSize = current.selectedSize,
-            quantity = current.quantity
+        cartRepository.addToCart(
+            product = p,
+            selectedColor = _uiState.value.selectedColor,
+            selectedSize = _uiState.value.selectedSize,
+            quantity = _uiState.value.quantity
         )
-        if (success) {
-            _uiState.update { it.copy(isAddedToCart = true) }
-        }
-        return success
+        _uiState.update { it.copy(isAddedToCart = true) }
     }
 
     fun resetCartFeedback() {
         _uiState.update { it.copy(isAddedToCart = false) }
     }
 }
-

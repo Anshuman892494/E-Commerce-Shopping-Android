@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import e_commerce_app.com.data.model.Product
 import e_commerce_app.com.data.repository.ProductRepository
+import e_commerce_app.com.data.repository.WishlistRepository
 import e_commerce_app.com.util.NetworkConnectivityObserver
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -18,11 +19,13 @@ data class CatalogUiState(
     val selectedSort: String? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val isOffline: Boolean = false
+    val isOffline: Boolean = false,
+    val wishlistedIds: Set<String> = emptySet()
 )
 
 class CatalogViewModel(
     private val productRepository: ProductRepository,
+    private val wishlistRepository: WishlistRepository,
     private val networkObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
@@ -41,7 +44,20 @@ class CatalogViewModel(
                 }
             }
         }
+
+        // Observe wishlist changes
+        viewModelScope.launch {
+            wishlistRepository.wishlist.collect { list ->
+                val ids = list.map { it.id }.toSet()
+                _uiState.update { it.copy(wishlistedIds = ids) }
+            }
+        }
+
         loadProducts()
+    }
+
+    fun toggleWishlist(product: Product) {
+        wishlistRepository.toggleWishlist(product)
     }
 
     fun loadProducts() {
@@ -64,23 +80,23 @@ class CatalogViewModel(
     }
 
     fun selectCategory(category: String) {
-        if (_uiState.value.selectedCategory == category) return
-        _uiState.update { it.copy(selectedCategory = category) }
-        loadProducts()
+        if (_uiState.value.selectedCategory != category) {
+            _uiState.update { it.copy(selectedCategory = category) }
+            loadProducts()
+        }
     }
 
     fun onSearchQueryChanged(query: String) {
         _uiState.update { it.copy(searchQuery = query) }
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            delay(350) // Debounce search input
+            delay(350)
             loadProducts()
         }
     }
 
-    fun setSort(sort: String?) {
+    fun selectSort(sort: String?) {
         _uiState.update { it.copy(selectedSort = sort) }
         loadProducts()
     }
 }
-

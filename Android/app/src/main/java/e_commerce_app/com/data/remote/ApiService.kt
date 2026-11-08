@@ -31,6 +31,17 @@ interface ApiService {
     @POST("api/cart/validate")
     suspend fun validateCart(@Body request: CartValidationRequest): Response<CartValidationResponse>
 
+    // --- Coupon Validation ---
+    @POST("api/coupons/validate")
+    suspend fun validateCoupon(@Body request: ValidateCouponRequest): Response<ValidateCouponResponse>
+
+    // --- Profile Update ---
+    @PUT("api/auth/profile")
+    suspend fun updateProfile(
+        @Header("Authorization") token: String,
+        @Body request: UpdateProfileRequest
+    ): Response<MeResponse>
+
     // --- Orders ---
     @POST("api/orders")
     suspend fun createOrder(@Body request: CreateOrderRequest): Response<CreateOrderResponse>

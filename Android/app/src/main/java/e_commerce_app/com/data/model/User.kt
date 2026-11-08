@@ -3,7 +3,13 @@ package e_commerce_app.com.data.model
 data class User(
     val id: String,
     val name: String,
-    val email: String
+    val email: String,
+    val shippingAddress: ShippingAddress? = null
+)
+
+data class UpdateProfileRequest(
+    val name: String? = null,
+    val shippingAddress: ShippingAddress? = null
 )
 
 data class LoginRequest(

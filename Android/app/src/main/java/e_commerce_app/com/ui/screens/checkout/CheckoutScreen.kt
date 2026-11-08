@@ -287,6 +287,88 @@ fun CheckoutScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Coupon Code Card
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(imageVector = Icons.Default.ConfirmationNumber, contentDescription = null, tint = OrangeCTA)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Promotional Discount", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    if (uiState.appliedCoupon != null) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(SuccessGreen.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(
+                                    text = "Code: ${uiState.appliedCoupon}",
+                                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = SuccessGreen
+                                )
+                                Text(
+                                    text = "${uiState.discountPercent.toInt()}% discount applied",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = SuccessGreen
+                                )
+                            }
+                            IconButton(onClick = viewModel::removeCoupon) {
+                                Icon(imageVector = Icons.Default.Close, contentDescription = "Remove coupon", tint = MaterialTheme.colorScheme.error)
+                            }
+                        }
+                    } else {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            OutlinedTextField(
+                                value = uiState.couponCodeInput,
+                                onValueChange = viewModel::onCouponCodeChanged,
+                                placeholder = { Text("Try ALGIONS20") },
+                                singleLine = true,
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.weight(1f)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Button(
+                                onClick = viewModel::applyCoupon,
+                                enabled = !uiState.isValidatingCoupon && uiState.couponCodeInput.isNotBlank(),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                            ) {
+                                if (uiState.isValidatingCoupon) {
+                                    CircularProgressIndicator(modifier = Modifier.size(16.dp), color = Color.White, strokeWidth = 2.dp)
+                                } else {
+                                    Text("Apply")
+                                }
+                            }
+                        }
+                    }
+
+                    if (uiState.couponMessage != null && uiState.appliedCoupon == null) {
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = uiState.couponMessage!!,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Section 3: Order Items & Pricing Breakdown
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -329,6 +411,13 @@ fun CheckoutScreen(
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text("Items Subtotal", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text("$${"%.2f".format(uiState.subtotal)}", style = MaterialTheme.typography.bodySmall)
+                    }
+                    if (uiState.discountAmount > 0) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text("Discount (${uiState.discountPercent.toInt()}%)", style = MaterialTheme.typography.bodySmall, color = SuccessGreen)
+                            Text("-$${"%.2f".format(uiState.discountAmount)}", style = MaterialTheme.typography.bodySmall, color = SuccessGreen, fontWeight = FontWeight.Bold)
+                        }
                     }
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

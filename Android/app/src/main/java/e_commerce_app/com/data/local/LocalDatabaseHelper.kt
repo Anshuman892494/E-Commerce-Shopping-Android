@@ -53,13 +53,30 @@ class LocalDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE
             )
             """.trimIndent()
         )
+
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS $TABLE_WISHLIST (
+                product_id TEXT PRIMARY KEY,
+                json_data TEXT,
+                added_at INTEGER
+            )
+            """.trimIndent()
+        )
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_PRODUCTS")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_CART")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_ORDERS")
-        onCreate(db)
+        if (oldVersion < 2) {
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS $TABLE_WISHLIST (
+                    product_id TEXT PRIMARY KEY,
+                    json_data TEXT,
+                    added_at INTEGER
+                )
+                """.trimIndent()
+            )
+        }
     }
 
     // ---------------------------------------------------------
@@ -187,13 +204,54 @@ class LocalDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE
         return list
     }
 
+    // ---------------------------------------------------------
+    // WISHLIST PERSISTENCE
+    // ---------------------------------------------------------
+    fun saveWishlistItem(product: Product) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("product_id", product.id)
+            put("json_data", gson.toJson(product))
+            put("added_at", System.currentTimeMillis())
+        }
+        db.insertWithOnConflict(TABLE_WISHLIST, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+
+    fun removeWishlistItem(productId: String) {
+        val db = writableDatabase
+        db.delete(TABLE_WISHLIST, "product_id = ?", arrayOf(productId))
+    }
+
+    fun isInWishlist(productId: String): Boolean {
+        val db = readableDatabase
+        val cursor = db.query(TABLE_WISHLIST, arrayOf("product_id"), "product_id = ?", arrayOf(productId), null, null, null)
+        cursor.use {
+            return it.count > 0
+        }
+    }
+
+    fun getWishlist(): List<Product> {
+        val list = mutableListOf<Product>()
+        val db = readableDatabase
+        val cursor = db.query(TABLE_WISHLIST, arrayOf("json_data"), null, null, null, null, "added_at DESC")
+        cursor.use {
+            while (it.moveToNext()) {
+                val json = it.getString(0)
+                val prod = gson.fromJson(json, Product::class.java)
+                list.add(prod)
+            }
+        }
+        return list
+    }
+
     companion object {
         private const val DATABASE_NAME = "ecommerce_app.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2
 
         private const val TABLE_PRODUCTS = "cached_products"
         private const val TABLE_CART = "cart_items"
         private const val TABLE_ORDERS = "cached_orders"
+        private const val TABLE_WISHLIST = "wishlist_items"
     }
 }
 

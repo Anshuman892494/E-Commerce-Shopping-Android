@@ -21,14 +21,16 @@ class OrderRepository(
         items: List<CartItem>,
         address: ShippingAddress,
         paymentDetails: PaymentDetails,
-        simulationMode: SimulationMode = SimulationMode.NORMAL
+        simulationMode: SimulationMode = SimulationMode.NORMAL,
+        couponCode: String? = null
     ): NetworkResult<Order> {
         return try {
             val request = CreateOrderRequest(
                 items = items,
                 shippingAddress = address,
                 paymentDetails = paymentDetails,
-                simulationMode = simulationMode.name
+                simulationMode = simulationMode.name,
+                couponCode = couponCode
             )
 
             val response = apiService.createOrder(request)
@@ -89,6 +91,19 @@ class OrderRepository(
             } else {
                 NetworkResult.Exception(e)
             }
+        }
+    }
+
+    suspend fun validateCoupon(code: String): NetworkResult<ValidateCouponResponse> {
+        return try {
+            val response = apiService.validateCoupon(ValidateCouponRequest(code))
+            if (response.isSuccessful && response.body() != null) {
+                NetworkResult.Success(response.body()!!)
+            } else {
+                NetworkResult.Error(response.code(), "Invalid promotional coupon code.")
+            }
+        } catch (e: Exception) {
+            NetworkResult.Exception(e)
         }
     }
 

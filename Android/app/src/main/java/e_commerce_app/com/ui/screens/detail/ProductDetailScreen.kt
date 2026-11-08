@@ -66,6 +66,17 @@ fun ProductDetailScreen(
                 },
                 actions = {
                     IconButton(
+                        onClick = viewModel::toggleWishlist,
+                        modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (uiState.isWishlisted) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = "Save to Wishlist",
+                            tint = if (uiState.isWishlisted) Color(0xFFEF4444) else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    IconButton(
                         onClick = onCartClick,
                         modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
                     ) {

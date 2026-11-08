@@ -19,6 +19,11 @@ data class CheckoutUiState(
     val cardNumber: String = "4242 •••• •••• 4242",
     val cardExp: String = "12/28",
     val cardCvv: String = "888",
+    val couponCodeInput: String = "",
+    val appliedCoupon: String? = null,
+    val discountPercent: Double = 0.0,
+    val couponMessage: String? = null,
+    val isValidatingCoupon: Boolean = false,
     val simulationMode: SimulationMode = SimulationMode.NORMAL,
     val isPlacingOrder: Boolean = false,
     val errorMessage: String? = null,
@@ -27,14 +32,20 @@ data class CheckoutUiState(
     val subtotal: Double
         get() = items.sumOf { it.subtotal }
 
+    val discountAmount: Double
+        get() = (subtotal * discountPercent / 100.0)
+
+    val discountedSubtotal: Double
+        get() = maxOf(0.0, subtotal - discountAmount)
+
     val shipping: Double
-        get() = if (items.isEmpty() || subtotal > 100.0) 0.0 else 9.99
+        get() = if (items.isEmpty() || discountedSubtotal > 100.0) 0.0 else 9.99
 
     val tax: Double
-        get() = (subtotal * 0.08)
+        get() = (discountedSubtotal * 0.08)
 
     val grandTotal: Double
-        get() = subtotal + shipping + tax
+        get() = discountedSubtotal + shipping + tax
 
     val isAddressValid: Boolean
         get() = fullName.isNotBlank() && street.isNotBlank() && city.isNotBlank() && postalCode.isNotBlank()
@@ -61,6 +72,68 @@ class CheckoutViewModel(
     fun updateCity(value: String) = _uiState.update { it.copy(city = value) }
     fun updatePostalCode(value: String) = _uiState.update { it.copy(postalCode = value) }
     fun updatePhone(value: String) = _uiState.update { it.copy(phone = value) }
+
+    fun onCouponCodeChanged(code: String) {
+        _uiState.update { it.copy(couponCodeInput = code, couponMessage = null) }
+    }
+
+    fun applyCoupon() {
+        val code = _uiState.value.couponCodeInput.trim()
+        if (code.isBlank()) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isValidatingCoupon = true, couponMessage = null) }
+            when (val res = orderRepository.validateCoupon(code)) {
+                is NetworkResult.Success -> {
+                    val resp = res.data
+                    if (resp.valid) {
+                        _uiState.update {
+                            it.copy(
+                                isValidatingCoupon = false,
+                                appliedCoupon = resp.code ?: code.uppercase(),
+                                discountPercent = resp.discountPercent,
+                                couponMessage = resp.message ?: "Coupon applied: ${resp.discountPercent}% OFF!"
+                            )
+                        }
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                isValidatingCoupon = false,
+                                couponMessage = resp.message ?: "Invalid coupon code."
+                            )
+                        }
+                    }
+                }
+                is NetworkResult.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            isValidatingCoupon = false,
+                            couponMessage = res.message
+                        )
+                    }
+                }
+                is NetworkResult.Exception -> {
+                    _uiState.update {
+                        it.copy(
+                            isValidatingCoupon = false,
+                            couponMessage = "Failed to connect to coupon validation service."
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun removeCoupon() {
+        _uiState.update {
+            it.copy(
+                appliedCoupon = null,
+                discountPercent = 0.0,
+                couponCodeInput = "",
+                couponMessage = null
+            )
+        }
+    }
 
     fun setSimulationMode(mode: SimulationMode) {
         _uiState.update { it.copy(simulationMode = mode) }
@@ -99,7 +172,8 @@ class CheckoutViewModel(
                 items = current.items,
                 address = address,
                 paymentDetails = payment,
-                simulationMode = current.simulationMode
+                simulationMode = current.simulationMode,
+                couponCode = current.appliedCoupon
             )) {
                 is NetworkResult.Success -> {
                     _uiState.update {
@@ -131,4 +205,3 @@ class CheckoutViewModel(
         }
     }
 }
-

@@ -24,7 +24,8 @@ data class CreateOrderRequest(
     val items: List<CartItem>,
     val shippingAddress: ShippingAddress,
     val paymentDetails: PaymentDetails,
-    val simulationMode: String = "NORMAL"
+    val simulationMode: String = "NORMAL",
+    val couponCode: String? = null
 )
 
 data class Order(
@@ -35,11 +36,25 @@ data class Order(
     val shippingAddress: ShippingAddress,
     val paymentMethod: String,
     val subtotal: Double,
+    val discount: Double = 0.0,
     val shipping: Double,
     val tax: Double,
     val grandTotal: Double,
+    val couponCode: String? = null,
     val estimatedDelivery: String,
     val isServerConfirmed: Boolean = true
+)
+
+data class ValidateCouponRequest(
+    val code: String
+)
+
+data class ValidateCouponResponse(
+    val valid: Boolean,
+    val code: String? = null,
+    val discountPercent: Double = 0.0,
+    val description: String? = null,
+    val message: String? = null
 )
 
 data class CreateOrderResponse(

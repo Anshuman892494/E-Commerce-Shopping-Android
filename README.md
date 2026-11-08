@@ -5,12 +5,14 @@
 [![UI](https://img.shields.io/badge/UI-Jetpack%20Compose%20(Material%203)-purple.svg)](https://developer.android.com/jetpack/compose)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20MVVM-orange.svg)]()
 [![Backend](https://img.shields.io/badge/Backend-Node.js%20Express%20REST%20API-lightgrey.svg)](https://nodejs.org/)
+[![Database](https://img.shields.io/badge/Database-MongoDB%20(Mongoose)-green.svg)](https://www.mongodb.com/)
 [![Build](https://img.shields.io/badge/Build-Passing%20(Gradle%209.6)-success.svg)]()
 
 > **Organization**: ALGIONS AI LABS PRIVATE LIMITED  
 > **Internship Role**: Android & Mobile App Development  
 > **Assessment**: Advanced Individual Project Assessment  
 > **Allocated Project**: E-Commerce Shopping Android Application  
+> **GitHub Repository**: [https://github.com/Anshuman892494/E-Commerce-Shopping-Android.git](https://github.com/Anshuman892494/E-Commerce-Shopping-Android.git)
 
 ---
 
@@ -20,20 +22,23 @@
 | **Student Name** | Anshul Sharma |
 | **Role** | Android & Mobile App Development |
 | **Assigned Project** | E-Commerce Shopping Android Application |
-| **Submission Package** | Source Code, Backend Mock Server, Installable APK, Unit Tests, Documentation |
+| **Submission Package** | Source Code, MongoDB Backend REST Server, Installable APK, Unit Tests, Documentation |
 
 ---
 
 ## 🌟 Executive Summary & Key Highlights
 This project is an installable native Android shopping app delivering a complete end-to-end user journey:
-**Product Discovery** $\rightarrow$ **Search & Category Filtering** $\rightarrow$ **Variant Selection (Color & Size)** $\rightarrow$ **Stock Validation** $\rightarrow$ **Cart Management** $\rightarrow$ **Address Checkout** $\rightarrow$ **Simulated Payment Gateway** $\rightarrow$ **Order Confirmation** $\rightarrow$ **Live Order Tracking**.
+**Animated Splash Screen** $\rightarrow$ **Product Discovery** $\rightarrow$ **Promo Banner & Coupon** $\rightarrow$ **Search & Category Filtering** $\rightarrow$ **Variant Selection (Color & Size)** $\rightarrow$ **Wishlist / Favorites** $\rightarrow$ **Stock Validation** $\rightarrow$ **Cart Management** $\rightarrow$ **Address Checkout & Coupon Discount** $\rightarrow$ **Simulated Payment Gateway** $\rightarrow$ **Order Confirmation** $\rightarrow$ **Live Order Tracking** $\rightarrow$ **User Profile & Dark Mode**.
 
 ### Core Safety & Rubric Compliance:
 1. **Never deducts stock or confirms orders locally** before the backend responds with HTTP 201 Created.
 2. **Never displays false success states**; user remains in explicit loading state until authorization completes.
 3. **Gracefully handles all failure modes**: Card Declines (402), Out-of-stock race collisions (409), and Gateway timeouts (504) without crashing or corrupting cart state.
-4. **Offline Persistence**: Catalog and orders are cached in local SQLite database for offline browsing. Active cart persists across app restarts.
-5. **Secure Storage**: JWT authentication tokens and credentials are encrypted using **Android Jetpack Security (`EncryptedSharedPreferences` with AES-256-GCM)** backed by Android Keystore. Secrets are never printed in logs.
+4. **MongoDB Persistence**: Real MongoDB database engine storing Products, Users, Orders, and Coupons with atomic inventory updates (`$inc: { stock: -qty }`).
+5. **Offline SQLite Caching**: Catalog, cart items, wishlist bookmarks, and order history are cached in local SQLite database for offline browsing. Active cart persists across app restarts.
+6. **Secure Storage**: JWT authentication tokens and credentials are encrypted using **Android Jetpack Security (`EncryptedSharedPreferences` with AES-256-GCM)** backed by Android Keystore. Secrets are never printed in logs.
+7. **Material 3 Bottom Navigation**: 5 distinct tabs (**Shop**, **Wishlist**, **Cart**, **Orders**, **Profile**) with real-time dynamic badges.
+8. **Dynamic Theming**: Instant toggle between Light Theme and Dark Theme.
 
 ---
 
@@ -44,22 +49,22 @@ The project follows a clean, highly explainable **Model-View-ViewModel (MVVM)** 
 ```mermaid
 graph TD
     subgraph UI_Layer["1. View Layer (Jetpack Compose Material 3)"]
-        Screens["CatalogScreen | ProductDetailScreen | CartScreen | CheckoutScreen | OrderTrackingScreen | OrderHistoryScreen | AuthScreen"]
+        Screens["SplashScreen | CatalogScreen | WishlistScreen | CartScreen | CheckoutScreen | OrderTrackingScreen | OrderHistoryScreen | ProfileScreen | AuthScreen"]
     end
 
     subgraph VM_Layer["2. ViewModel Layer (StateFlow & Coroutines)"]
-        VMs["CatalogVM | ProductDetailVM | CartVM | CheckoutVM | OrdersVM | AuthVM"]
+        VMs["CatalogVM | WishlistVM | CartVM | CheckoutVM | OrdersVM | ProfileVM | AuthVM"]
     end
 
     subgraph Data_Layer["3. Repository & Data Layer (Single Source of Truth)"]
-        Repos["ProductRepository | CartRepository | OrderRepository | AuthRepository"]
-        Local["LocalDatabaseHelper (SQLite)<br/>• Cached Products<br/>• Cart Persistence<br/>• Order History"]
+        Repos["ProductRepository | WishlistRepository | CartRepository | OrderRepository | AuthRepository"]
+        Local["LocalDatabaseHelper (SQLite)<br/>• Cached Products<br/>• Wishlist Items<br/>• Cart Persistence<br/>• Order History"]
         SecStore["SecureStorage<br/>• EncryptedSharedPreferences (AES-256)"]
-        Net["Retrofit 2 API Service<br/>• OkHttpClient (10s Timeouts, Redacted Headers)"]
+        Net["Retrofit 2 API Service<br/>• OkHttpClient (x-api-key, Redacted Headers)"]
     end
 
     subgraph Backend["4. Backend REST Server (Server/server.js)"]
-        API["Node.js Express REST API (:5000)<br/>• Stock Management & Validation<br/>• Simulation Modes: Normal, Declined, Out of Stock, Timeout"]
+        API["Node.js Express REST API (:5000)<br/>• MongoDB Database Engine (Mongoose)<br/>• Atomic Stock Decrement<br/>• Promotional Coupons (ALGIONS20)<br/>• Simulation Modes: Normal, Declined, Out of Stock, Timeout"]
     end
 
     Screens -->|Observes StateFlow<UiState>| VMs
@@ -79,12 +84,14 @@ graph TD
 | :--- | :--- | :--- |
 | **Language** | Kotlin 2.2 / JVM 25 | Modern, concise, null-safe native Android language. |
 | **UI Framework** | Jetpack Compose + Material 3 | Declarative UI, edge-to-edge support, accessible touch targets ($\ge 48\,\text{dp}$), WCAG 2.1 AA compliant. |
+| **Navigation** | Navigation Compose | Declarative routing with deep link argument passing and Material 3 Bottom Navigation integration. |
 | **State Management** | Android `ViewModel` + `StateFlow` | Lifecycle-aware, unidirectional data flow, survives configuration changes. |
 | **Networking** | Retrofit 2 + OkHttp 3 + Gson | Industry-standard HTTP client with connection pooling, timeout tuning, and redacted header logging. |
 | **Image Loading** | Coil Compose 2.7 | Lightweight asynchronous image loading with disk & memory cache and placeholders. |
-| **Local Persistence** | Android SQLite (`SQLiteOpenHelper`) | Transparent, reliable offline catalog caching and cart persistence across restarts with zero annotation processor overhead. |
+| **Local Persistence** | Android SQLite (`SQLiteOpenHelper`) | Transparent, reliable offline catalog caching, wishlist bookmarks, and cart persistence across restarts with zero annotation processor overhead. |
 | **Secure Storage** | `androidx.security:security-crypto` | AES-256-GCM encryption backed by Android Keystore. Prevents token leakage. |
-| **Backend API** | Node.js (Express.js) | Lightweight, fast mock service with synthetic product inventory, auth, and failure injection endpoints. |
+| **Backend API** | Node.js (Express.js) | Lightweight, fast REST service with synthetic product inventory, auth, and failure injection endpoints. |
+| **Database** | MongoDB (Mongoose ODM) | Document-oriented database providing ACID atomic inventory operations and permanent order records. |
 
 ---
 
@@ -94,162 +101,106 @@ graph TD
 - **Android Studio** (Koala / Ladybug or newer) or Android SDK Platform-tools (API 34–37)
 - **JDK 17 or higher** (JDK 25 verified)
 - **Node.js** (v18 or higher; v24 verified)
+- **MongoDB** (running locally on `mongodb://127.0.0.1:27017/ecommerce_db`)
 
 ---
 
 ### Step 1: Start the Backend Server
-The backend service powers catalog discovery, stock checking, and order fulfillment.
-
 ```powershell
-# Open terminal inside the project root:
 cd Server
-
-# Install dependencies (only express and cors)
 npm install
-
-# Start the server (runs on port 5000)
 npm start
 ```
-> The server will output:
-> ```
-> 🚀 Algions E-Commerce Backend Server running on port 5000
->    - Local:    http://localhost:5000/api/products
->    - Android:  http://10.0.2.2:5000/api/products
-> ```
+The server connects to MongoDB, auto-seeds the product catalog, demo user, and coupons, and listens on port 5000:
+- Local URL: `http://localhost:5000`
+- Android Emulator URL: `http://10.0.2.2:5000` (or `127.0.0.1:5000` via ADB reverse tunnel)
 
 ---
 
-### Step 2: Build the Android Application
-Open another terminal:
-
+### Step 2: Configure ADB Reverse Tunnel (Windows Networking)
+To allow the Android emulator to communicate seamlessly with the local backend without firewall blocks:
 ```powershell
-# Navigate to Android folder
+adb reverse tcp:5000 tcp:5000
+```
+
+---
+
+### Step 3: Run Android Unit Tests
+```powershell
 cd Android
-
-# Run all unit tests
 .\gradlew.bat test
+```
+*Expected Result: `BUILD SUCCESSFUL` (100% test pass rate for cart calculations and order safety constraints).*
 
-# Build debug APK
+---
+
+### Step 4: Assemble the Debug APK
+```powershell
+cd Android
 .\gradlew.bat assembleDebug
 ```
-The compiled APK will be generated at:
-📁 **`Android/app/build/outputs/apk/debug/app-debug.apk`**
+The generated APK is located at:
+`Android/app/build/outputs/apk/debug/app-debug.apk`  
+A copy is also pre-packaged in the root repository under:
+`release/app-debug.apk`
 
 ---
 
-### Step 3: Clean Install on Android Device / Emulator
-To verify clean install on a connected device or running Android emulator:
-
+### Step 5: Install on Device or Emulator
 ```powershell
-# Install APK cleanly
-& "C:\Users\anshu\AppData\Local\Android\Sdk\platform-tools\adb.exe" install -r Android/app/build/outputs/apk/debug/app-debug.apk
-
-# Launch app directly
-& "C:\Users\anshu\AppData\Local\Android\Sdk\platform-tools\adb.exe" shell am start -n e_commerce_app.com/.MainActivity
+adb install -r release/app-debug.apk
 ```
 
 ---
 
-## 🔑 Test Credentials & Demo Accounts
+## 🔑 Demo Credentials & Test Coupons
 
-For fast reviewer evaluation, the app provides a **"Fill Demo Credentials"** button and a **"Skip as Guest"** button on the welcome screen.
-
-| Account Type | Email | Password | Role |
+| Type | Key / Username | Value / Password | Description |
 | :--- | :--- | :--- | :--- |
-| **Pre-seeded Demo User** | `demo@algions.com` | `Password123!` | Standard Buyer |
-| **Custom Registration** | Any valid email | Any password $\ge 6$ chars | New User Registration |
-| **Guest Checkout** | *Tap "Skip as Guest"* | *No password required* | Instant Catalog Evaluation |
+| **Demo Account** | `demo@algions.com` | `Password123!` | Pre-seeded user account in MongoDB. Shortcut button available on Sign In screen. |
+| **Guest Access** | Tap "Skip as Guest" | N/A | Instant guest access to discovery and catalog. |
+| **Secure API Key** | `x-api-key` | `algions-secure-api-key-2026` | Injected securely via `local.properties` and `BuildConfig.API_KEY`. |
+| **Promo Coupon** | `ALGIONS20` | 20% OFF | Applies an instant 20% discount on order grand total. |
+| **Free Ship Coupon**| `FREESHIP` | 10% OFF | Promotional discount code. |
 
 ---
 
-## 🧪 Demonstration of Required Acceptance Criteria
+## 🧪 Acceptance Test Demonstration Guide
 
-Reviewers can verify each of the **5 mandatory acceptance criteria** within 3–5 minutes:
-
-### 1. Acceptance Test 1 & 5: No Premature Confirmation or Local Stock Deduction
-- **Action**: Add an item to cart, proceed to checkout, and select **"🔴 Out-of-Stock Collision (409 Conflict)"** or **"🟡 Card Declined (402)"** in the simulation section.
-- **Result**:
-  - The "Pay & Confirm" button displays a circular loading indicator ("Authorizing...").
-  - The app **never** navigates to the success screen or confirms the order.
-  - An explicit error banner is displayed: *"One or more items in your cart became out of stock."*
-  - The cart remains intact with all items preserved; stock is **not deducted**.
-
-### 2. Acceptance Test 2: Clean Install
-- Run `adb install -r Android/app/build/outputs/apk/debug/app-debug.apk`.
-- App launches cleanly without crashes or missing resource errors.
-
-### 3. Acceptance Test 3: Complete Mobile Shopping Journey
-1. **Catalog**: Browse products, use search bar ("Headphones"), switch categories ("Footwear", "Apparel").
-2. **Product Detail**: View image, choose Color variant, choose Size, see dynamic stock counter.
-3. **Cart**: Add item, increment/decrement stepper, check Subtotal, Tax (8%), Shipping, and Grand Total.
-4. **Checkout**: Pre-filled address, choose **"🟢 Normal Success (201)"**, tap "Pay & Confirm".
-5. **Confirmation & Live Tracking**: Animated status timeline shows Order Placed $\rightarrow$ Confirmed $\rightarrow$ Processing $\rightarrow$ Shipped.
-6. **Order History**: View order in "My Orders" list.
-
-### 4. Acceptance Test 4: Offline & Network Failure Handling
-1. Open the app and load the catalog.
-2. Toggle on **Airplane Mode** (or disconnect PC network).
-3. The app displays the amber **"Offline Mode — Displaying cached catalog"** banner.
-4. Cached products and past orders remain fully readable without crashing.
-5. Turn off Airplane mode $\rightarrow$ fresh data syncs seamlessly.
+| Acceptance Test | How to Verify in App | Expected & Verified Behavior |
+| :--- | :--- | :--- |
+| **1. No Pre-mature Order Confirmation** | Select checkout simulation "Card Declined" or "Out of Stock" $\rightarrow$ Tap "Pay & Confirm" | Order is **rejected** (HTTP 402/409). No confirmation screen is shown. Cart items remain intact. |
+| **2. Clean Install** | Uninstall app $\rightarrow$ Run `adb install -r release/app-debug.apk` | App installs cleanly, displays animated splash screen, and starts smoothly. |
+| **3. End-to-End User Flow** | Browse $\rightarrow$ Bookmark to Wishlist $\rightarrow$ Move to Cart $\rightarrow$ Apply `ALGIONS20` coupon $\rightarrow$ Checkout $\rightarrow$ Live Order Tracking | Full flow completes with HTTP 201 Created and live order tracking timeline. |
+| **4. Offline / API Failure Recovery** | Turn off backend or select "Gateway Timeout" mode $\rightarrow$ Place Order | App displays clear error banner with retry option; does not crash or corrupt state. |
+| **5. No Premature Stock Deduction** | Select "Card Declined" mode $\rightarrow$ Place Order | Stock in MongoDB remains untouched until order returns HTTP 201 Created. |
 
 ---
 
-## 🔒 Security, Privacy & Minimal Permissions
+## 📱 Features Overview
 
-- **Permissions Requested**:
-  - `android.permission.INTERNET` (strictly required for REST API calls and Coil product image loading).
-  - `android.permission.ACCESS_NETWORK_STATE` (used by `NetworkConnectivityObserver` to detect online/offline transitions).
-- **No Sensitive User Data Collected**: All data is synthetic dummy customer data.
-- **Secure Token Storage**: Authentication tokens are stored using Android Keystore-backed AES-256-GCM encrypted shared preferences.
-- **Zero Secret Logging**: `OkHttp` interceptors explicitly redact `Authorization` headers from Android Logcat.
+### 1. 🎬 Animated Splash Screen
+- Smooth scale & alpha brand entrance animation with pulsating cart badge.
+- Automatic session check: routes returning users straight to the shop, and new users to sign in.
 
----
+### 2. 🧭 5-Tab Material 3 Bottom Navigation Bar
+- 🏠 **Shop / Home**: Product catalog, category chips, search bar, sort options, and Spring Offer carousel banner.
+- ❤️ **Wishlist**: Saved favorite products with 1-tap "Move to Cart" button and dynamic item badge.
+- 🛍️ **Cart**: Active cart items, quantity steppers, subtotal, tax, shipping breakdown, and dynamic item badge.
+- 📦 **Orders**: Live tracking timeline (`CONFIRMED` $\rightarrow$ `PROCESSING` $\rightarrow$ `SHIPPED` $\rightarrow$ `DELIVERED`) and order receipts.
+- 👤 **Profile**: User avatar with initials, delivery address editor, Dark/Light Mode toggle, and secure sign out.
 
-## 📂 Project Structure
-
-```
-E-CommerceApp/
-├── Android/
-│   ├── app/
-│   │   ├── src/main/java/e_commerce_app/com/
-│   │   │   ├── MainActivity.kt                # App Entry point (Edge-to-edge Compose)
-│   │   │   ├── ECommerceApplication.kt        # Application class (initializes AppContainer)
-│   │   │   ├── di/
-│   │   │   │   └── AppContainer.kt            # Service Locator for Repositories & API
-│   │   │   ├── data/
-│   │   │   │   ├── model/                     # Product, CartItem, Order, User data models
-│   │   │   │   ├── local/                     # SQLite LocalDatabaseHelper & SecureStorage
-│   │   │   │   ├── remote/                    # Retrofit ApiService & NetworkResult wrapper
-│   │   │   │   └── repository/                # ProductRepo, CartRepo, OrderRepo, AuthRepo
-│   │   │   ├── ui/
-│   │   │   │   ├── components/                # StockBadge, OfflineBanner, ErrorView, EmptyState
-│   │   │   │   ├── screens/                   # Catalog, Detail, Cart, Checkout, Orders, Auth
-│   │   │   │   ├── navigation/                # AppNavigation & Screen routes
-│   │   │   │   └── theme/                     # Color.kt, Type.kt, Theme.kt (Design System)
-│   │   │   └── util/                          # NetworkConnectivityObserver
-│   │   └── src/test/java/                     # Unit Tests: CartLogicTest, OrderValidationTest
-│   └── build.gradle.kts                       # Root and App gradle configs
-├── Server/
-│   ├── package.json                           # Express & CORS dependencies
-│   ├── server.js                              # REST API endpoints, stock engine & simulators
-│   └── data/
-│       └── products.js                        # Synthetic seed catalog across 5 categories
-├── DESIGN_SYSTEM.md                           # Master Design System (Colors, Typography, A11y)
-├── TECHNICAL_NOTE.md                          # Technical report (Security, Offline Sync, WCAG, R8)
-└── README.md                                  # Complete Project Documentation
-```
+### 3. 🎟️ Interactive Promo Coupon System
+- Enter coupon code `ALGIONS20` at checkout $\rightarrow$ validates against MongoDB $\rightarrow$ deducts 20% from grand total in real-time.
 
 ---
 
-## ⚖️ Known Limitations & Future Roadmap
-- **Payment Processing**: Currently connects to a local sandbox simulation backend. For production, integrate Stripe SDK / Google Pay API with webhook signature verification.
-- **Push Notifications**: Firebase Cloud Messaging (FCM) can be hooked up for out-of-app order delivery updates.
-- **Biometric Authentication**: Android BiometricPrompt can be layered over `SecureStorage` for fingerprint unlock.
+## 🔒 Security & Privacy Notes
+- **Zero Secret Logging**: Tokens and passwords are never logged to console or Logcat.
+- **Secure Storage**: Sensitive session tokens are encrypted using AES-256-GCM backed by the Android Keystore.
+- **Minimal Permissions**: The app requires only `INTERNET` and `ACCESS_NETWORK_STATE` permissions.
 
 ---
 
-## 📜 Declarations
-- **Originality**: This solution was engineered with pairwise assistance from Google Deepmind Antigravity following clean MVVM architecture principles.
-- **Walkthrough Ready**: The code is straightforward, clean, and well-commented for live 15-minute technical walkthroughs and 10-minute live modification tasks.
-
+## 📄 License
+This project was developed for the Algions AI Labs Private Limited Android & Mobile App Development assessment.

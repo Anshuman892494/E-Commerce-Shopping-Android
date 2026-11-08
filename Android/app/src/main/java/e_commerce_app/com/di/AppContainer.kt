@@ -102,6 +102,12 @@ class AppContainer(private val context: Context) {
         ProductRepository(apiService, localDb)
     }
 
+    val isDarkMode = kotlinx.coroutines.flow.MutableStateFlow(false)
+
+    val wishlistRepository: WishlistRepository by lazy {
+        WishlistRepository(localDb)
+    }
+
     val orderRepository: OrderRepository by lazy {
         OrderRepository(apiService, localDb, cartRepository)
     }

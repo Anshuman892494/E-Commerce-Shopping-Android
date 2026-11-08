@@ -1,9 +1,7 @@
 package e_commerce_app.com.data.repository
 
 import e_commerce_app.com.data.local.SecureStorage
-import e_commerce_app.com.data.model.LoginRequest
-import e_commerce_app.com.data.model.RegisterRequest
-import e_commerce_app.com.data.model.User
+import e_commerce_app.com.data.model.*
 import e_commerce_app.com.data.remote.ApiService
 import e_commerce_app.com.data.remote.NetworkResult
 
@@ -44,6 +42,22 @@ class AuthRepository(
             } else {
                 val errorMsg = response.errorBody()?.string() ?: "Registration failed"
                 NetworkResult.Error(response.code(), errorMsg)
+            }
+        } catch (e: Exception) {
+            NetworkResult.Exception(e)
+        }
+    }
+
+    suspend fun updateProfile(name: String, shippingAddress: ShippingAddress): NetworkResult<User> {
+        val token = secureStorage.getAuthToken() ?: return NetworkResult.Error(401, "Not authenticated")
+        return try {
+            val response = apiService.updateProfile("Bearer $token", UpdateProfileRequest(name, shippingAddress))
+            if (response.isSuccessful && response.body() != null) {
+                val updatedUser = response.body()!!.user
+                secureStorage.saveUser(updatedUser)
+                NetworkResult.Success(updatedUser)
+            } else {
+                NetworkResult.Error(response.code(), response.message())
             }
         } catch (e: Exception) {
             NetworkResult.Exception(e)
