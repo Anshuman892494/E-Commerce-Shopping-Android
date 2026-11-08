@@ -4,8 +4,11 @@
 /local.properties
 /.idea/
 .DS_Store
+# Build outputs & APKs
 build/
 */build/
+release/
+*.apk
 captures/
 .externalNativeBuild
 .cxx
