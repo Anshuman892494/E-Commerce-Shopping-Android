@@ -1,7 +1,19 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
 }
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { load(it) }
+    }
+}
+
+val apiBaseUrl = localProperties.getProperty("API_BASE_URL") ?: "\"http://10.0.2.2:5000/\""
+val apiKey = localProperties.getProperty("API_KEY") ?: "\"algions-secure-api-key-2026\""
 
 android {
     namespace = "e_commerce_app.com"
@@ -17,6 +29,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Inject secure properties from local.properties into BuildConfig
+        buildConfigField("String", "BASE_URL", apiBaseUrl)
+        buildConfigField("String", "API_KEY", apiKey)
     }
 
     buildTypes {
@@ -33,6 +49,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
