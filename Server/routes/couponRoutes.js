@@ -5,3 +5,4 @@ const couponController = require('../controllers/couponController');
 router.post('/validate', couponController.validateCoupon);
 
 module.exports = router;
+

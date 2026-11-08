@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import e_commerce_app.com.data.model.ShippingAddress
 import e_commerce_app.com.data.model.User
 
 /**
@@ -33,18 +34,36 @@ class SecureStorage(context: Context) {
     }
 
     fun saveUser(user: User) {
-        sharedPreferences.edit()
+        val editor = sharedPreferences.edit()
             .putString(KEY_USER_ID, user.id)
             .putString(KEY_USER_NAME, user.name)
             .putString(KEY_USER_EMAIL, user.email)
-            .apply()
+
+        user.shippingAddress?.let { addr ->
+            editor.putString(KEY_ADDR_FULL_NAME, addr.fullName)
+                .putString(KEY_ADDR_STREET, addr.street)
+                .putString(KEY_ADDR_CITY, addr.city)
+                .putString(KEY_ADDR_POSTAL, addr.postalCode)
+                .putString(KEY_ADDR_PHONE, addr.phone)
+        }
+        editor.apply()
     }
 
     fun getUser(): User? {
         val id = sharedPreferences.getString(KEY_USER_ID, null) ?: return null
         val name = sharedPreferences.getString(KEY_USER_NAME, "") ?: ""
         val email = sharedPreferences.getString(KEY_USER_EMAIL, "") ?: ""
-        return User(id, name, email)
+        val street = sharedPreferences.getString(KEY_ADDR_STREET, null)
+        val shippingAddress = if (street != null) {
+            ShippingAddress(
+                fullName = sharedPreferences.getString(KEY_ADDR_FULL_NAME, name) ?: name,
+                street = street,
+                city = sharedPreferences.getString(KEY_ADDR_CITY, "") ?: "",
+                postalCode = sharedPreferences.getString(KEY_ADDR_POSTAL, "") ?: "",
+                phone = sharedPreferences.getString(KEY_ADDR_PHONE, "") ?: ""
+            )
+        } else null
+        return User(id, name, email, shippingAddress)
     }
 
     fun clearSession() {
@@ -53,6 +72,11 @@ class SecureStorage(context: Context) {
             .remove(KEY_USER_ID)
             .remove(KEY_USER_NAME)
             .remove(KEY_USER_EMAIL)
+            .remove(KEY_ADDR_FULL_NAME)
+            .remove(KEY_ADDR_STREET)
+            .remove(KEY_ADDR_CITY)
+            .remove(KEY_ADDR_POSTAL)
+            .remove(KEY_ADDR_PHONE)
             .apply()
     }
 
@@ -65,6 +89,11 @@ class SecureStorage(context: Context) {
         private const val KEY_USER_ID = "user_id"
         private const val KEY_USER_NAME = "user_name"
         private const val KEY_USER_EMAIL = "user_email"
+        private const val KEY_ADDR_FULL_NAME = "addr_full_name"
+        private const val KEY_ADDR_STREET = "addr_street"
+        private const val KEY_ADDR_CITY = "addr_city"
+        private const val KEY_ADDR_POSTAL = "addr_postal"
+        private const val KEY_ADDR_PHONE = "addr_phone"
     }
 }
 

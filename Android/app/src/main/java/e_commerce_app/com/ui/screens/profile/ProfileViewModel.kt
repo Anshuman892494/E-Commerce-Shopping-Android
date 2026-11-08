@@ -12,13 +12,7 @@ import kotlinx.coroutines.launch
 data class ProfileUiState(
     val user: User? = null,
     val isDarkMode: Boolean = false,
-    val savedAddress: ShippingAddress = ShippingAddress(
-        fullName = "Algions Demo Student",
-        street = "452 Innovation Blvd, Suite 300",
-        city = "Bangalore",
-        postalCode = "560100",
-        phone = "+91 98765 43210"
-    ),
+    val savedAddress: ShippingAddress = ShippingAddress("", "", "", "", ""),
     val isUpdating: Boolean = false,
     val message: String? = null
 )
@@ -34,7 +28,13 @@ class ProfileViewModel(
     init {
         val user = authRepository.getCurrentUser()
         val currentDark = darkModeFlow.value
-        val initialAddress = user?.shippingAddress ?: _uiState.value.savedAddress
+        val initialAddress = user?.shippingAddress ?: ShippingAddress(
+            fullName = user?.name ?: "",
+            street = "",
+            city = "",
+            postalCode = "",
+            phone = ""
+        )
         _uiState.update {
             it.copy(
                 user = user,
@@ -47,6 +47,20 @@ class ProfileViewModel(
             darkModeFlow.collect { isDark ->
                 _uiState.update { it.copy(isDarkMode = isDark) }
             }
+        }
+    }
+
+    fun refreshUser() {
+        val user = authRepository.getCurrentUser()
+        user?.let { u ->
+            val addr = u.shippingAddress ?: ShippingAddress(
+                fullName = u.name,
+                street = "",
+                city = "",
+                postalCode = "",
+                phone = ""
+            )
+            _uiState.update { it.copy(user = u, savedAddress = addr) }
         }
     }
 

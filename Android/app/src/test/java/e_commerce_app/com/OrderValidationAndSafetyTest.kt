@@ -46,16 +46,44 @@ class OrderValidationAndSafetyTest {
             shippingAddress = ShippingAddress("John", "St", "City", "12345", "9999"),
             paymentMethod = "Sandbox Card",
             subtotal = 50.0,
+            discount = 10.0,
             shipping = 0.0,
-            tax = 4.0,
-            grandTotal = 54.0,
+            tax = 3.20,
+            grandTotal = 43.20,
             estimatedDelivery = "Nov 12, 2026",
             isServerConfirmed = true
         )
 
         assertTrue(order.isServerConfirmed)
         assertEquals("CONFIRMED", order.status)
-        assertEquals(54.0, order.grandTotal, 0.01)
+        assertEquals(43.20, order.grandTotal, 0.01)
+        assertEquals(10.0, order.discount, 0.01)
+    }
+
+    @Test
+    fun checkoutUiState_calculatesCouponDiscountCorrectly() {
+        val item = CartItem(
+            productId = "p1",
+            title = "Sneakers",
+            price = 100.0,
+            imageUrl = "",
+            quantity = 1
+        )
+        // 20% discount on $100 -> $20 off -> discountedSubtotal $80
+        // Shipping: $9.99 (since discountedSubtotal <= $100)
+        // Tax: 8% of $80 = $6.40
+        // Grand Total: 80 + 9.99 + 6.40 = $96.39
+        val stateWithCoupon = CheckoutUiState(
+            items = listOf(item),
+            appliedCoupon = "ALGIONS20",
+            discountPercent = 20.0
+        )
+
+        assertEquals(100.0, stateWithCoupon.subtotal, 0.01)
+        assertEquals(20.0, stateWithCoupon.discountAmount, 0.01)
+        assertEquals(80.0, stateWithCoupon.discountedSubtotal, 0.01)
+        assertEquals(9.99, stateWithCoupon.shipping, 0.01)
+        assertEquals(6.40, stateWithCoupon.tax, 0.01)
+        assertEquals(96.39, stateWithCoupon.grandTotal, 0.01)
     }
 }
-

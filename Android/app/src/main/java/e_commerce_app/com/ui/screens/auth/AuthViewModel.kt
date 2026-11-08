@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 data class AuthUiState(
-    val email: String = "demo@algions.com",
-    val password: String = "Password123!",
-    val name: String = "Anshul Demo User",
+    val email: String = "",
+    val password: String = "",
+    val name: String = "",
     val isRegisterMode: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -61,7 +61,7 @@ class AuthViewModel(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            errorMessage = "Cannot connect to server. Ensure mock backend is running."
+                            errorMessage = "Cannot connect to server. Ensure backend is running."
                         )
                     }
                 }
@@ -99,13 +99,37 @@ class AuthViewModel(
     }
 
     fun fillDemoCredentials() {
-        _uiState.update {
-            it.copy(
-                email = "demo@algions.com",
-                password = "Password123!",
-                isRegisterMode = false,
-                errorMessage = null
-            )
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            when (val res = authRepository.getDemoAccount()) {
+                is NetworkResult.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            email = res.data.email,
+                            password = res.data.password,
+                            name = res.data.name,
+                            isRegisterMode = false,
+                            isLoading = false
+                        )
+                    }
+                }
+                is NetworkResult.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = res.message
+                        )
+                    }
+                }
+                is NetworkResult.Exception -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = "Cannot connect to server. Ensure backend is running."
+                        )
+                    }
+                }
+            }
         }
     }
 }

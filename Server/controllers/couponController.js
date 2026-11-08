@@ -37,3 +37,4 @@ async function validateCoupon(req, res) {
 module.exports = {
   validateCoupon
 };
+

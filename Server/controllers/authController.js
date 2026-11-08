@@ -1,4 +1,27 @@
+const crypto = require('crypto');
 const User = require('../models/User');
+
+/**
+ * GET /api/auth/demo-account
+ * Fetches the pre-seeded demo account credentials and default address directly from MongoDB.
+ */
+async function getDemoAccount(req, res) {
+  try {
+    const demoUser = await User.findOne({ email: 'demo@algions.com' }).lean();
+    if (!demoUser) {
+      return res.status(404).json({ error: 'Demo account not found in database.' });
+    }
+    console.log(`[AUTH] Fetched demo account "${demoUser.email}" from MongoDB.`);
+    res.json({
+      email: demoUser.email,
+      password: demoUser.password,
+      name: demoUser.name,
+      shippingAddress: demoUser.shippingAddress
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
 
 /**
  * POST /api/auth/login
@@ -14,6 +37,10 @@ async function login(req, res) {
     if (!user || user.password !== password) {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
+
+    // Refresh token with fresh cryptographically secure random token
+    user.token = crypto.randomBytes(32).toString('hex');
+    await user.save();
 
     console.log(`[AUTH] User "${user.email}" successfully logged in (MongoDB verified).`);
     res.json({
@@ -50,7 +77,7 @@ async function register(req, res) {
       name,
       email: email.toLowerCase(),
       password,
-      token: `token-${Date.now()}-${Math.random().toString(36).substring(2)}`,
+      token: crypto.randomBytes(32).toString('hex'),
       shippingAddress: {
         fullName: name,
         street: '123 Tech Park',
@@ -115,6 +142,7 @@ async function updateProfile(req, res) {
 }
 
 module.exports = {
+  getDemoAccount,
   login,
   register,
   getMe,

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import e_commerce_app.com.data.model.*
 import e_commerce_app.com.data.remote.NetworkResult
+import e_commerce_app.com.data.repository.AuthRepository
 import e_commerce_app.com.data.repository.CartRepository
 import e_commerce_app.com.data.repository.OrderRepository
 import kotlinx.coroutines.flow.*
@@ -11,11 +12,11 @@ import kotlinx.coroutines.launch
 
 data class CheckoutUiState(
     val items: List<CartItem> = emptyList(),
-    val fullName: String = "Anshul Sharma",
-    val street: String = "42 Silicon Avenue, Sector 62",
-    val city: String = "Noida",
-    val postalCode: String = "201301",
-    val phone: String = "+91 98765 43210",
+    val fullName: String = "",
+    val street: String = "",
+    val city: String = "",
+    val postalCode: String = "",
+    val phone: String = "",
     val cardNumber: String = "4242 •••• •••• 4242",
     val cardExp: String = "12/28",
     val cardCvv: String = "888",
@@ -53,16 +54,33 @@ data class CheckoutUiState(
 
 class CheckoutViewModel(
     private val orderRepository: OrderRepository,
-    private val cartRepository: CartRepository
+    private val cartRepository: CartRepository,
+    private val authRepository: AuthRepository? = null
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CheckoutUiState())
     val uiState: StateFlow<CheckoutUiState> = _uiState.asStateFlow()
 
     init {
+        loadUserAddress()
         viewModelScope.launch {
             cartRepository.cartItems.collect { cartList ->
                 _uiState.update { it.copy(items = cartList) }
+            }
+        }
+    }
+
+    fun loadUserAddress() {
+        authRepository?.getCurrentUser()?.let { user ->
+            val addr = user.shippingAddress
+            _uiState.update {
+                it.copy(
+                    fullName = addr?.fullName?.ifBlank { user.name } ?: user.name,
+                    street = addr?.street ?: "",
+                    city = addr?.city ?: "",
+                    postalCode = addr?.postalCode ?: "",
+                    phone = addr?.phone ?: ""
+                )
             }
         }
     }

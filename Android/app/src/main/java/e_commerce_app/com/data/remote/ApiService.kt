@@ -7,6 +7,9 @@ import retrofit2.http.*
 interface ApiService {
 
     // --- Authentication ---
+    @GET("api/auth/demo-account")
+    suspend fun getDemoAccount(): Response<DemoAccountResponse>
+
     @POST("api/auth/login")
     suspend fun login(@Body request: LoginRequest): Response<AuthResponse>
 

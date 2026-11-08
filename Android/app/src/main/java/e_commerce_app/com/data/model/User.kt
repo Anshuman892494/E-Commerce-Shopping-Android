@@ -32,3 +32,10 @@ data class MeResponse(
     val user: User
 )
 
+data class DemoAccountResponse(
+    val email: String,
+    val password: String,
+    val name: String,
+    val shippingAddress: ShippingAddress? = null
+)
+

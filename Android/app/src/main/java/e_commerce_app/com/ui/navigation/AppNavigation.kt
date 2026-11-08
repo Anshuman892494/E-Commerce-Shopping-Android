@@ -251,7 +251,7 @@ fun AppNavigation(
             // --- 6. Checkout & Payment Screen ---
             composable(Screen.Checkout.route) {
                 val checkoutVm = remember {
-                    CheckoutViewModel(container.orderRepository, container.cartRepository)
+                    CheckoutViewModel(container.orderRepository, container.cartRepository, container.authRepository)
                 }
                 CheckoutScreen(
                     viewModel = checkoutVm,

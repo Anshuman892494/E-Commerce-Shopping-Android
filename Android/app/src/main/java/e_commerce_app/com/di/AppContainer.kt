@@ -33,17 +33,27 @@ class AppContainer(private val context: Context) {
         chain.proceed(requestBuilder.build())
     }
 
+    @Volatile
+    private var prefersLoopback = false
+
     // Handles Windows Firewall virtual NAT by seamlessly retrying over ADB reverse tunnel (127.0.0.1)
     private val hostFallbackInterceptor = Interceptor { chain ->
         val request = chain.request()
+        val originalHost = request.url.host
+        val effectiveRequest = if (prefersLoopback && originalHost == "10.0.2.2") {
+            request.newBuilder().url(request.url.newBuilder().host("127.0.0.1").build()).build()
+        } else {
+            request
+        }
         try {
-            chain.proceed(request)
+            chain.proceed(effectiveRequest)
         } catch (e: Exception) {
-            val host = request.url.host
-            if (host == "10.0.2.2") {
-                val fallbackUrl = request.url.newBuilder().host("127.0.0.1").build()
-                val fallbackRequest = request.newBuilder().url(fallbackUrl).build()
-                chain.proceed(fallbackRequest)
+            if (effectiveRequest.url.host == "10.0.2.2") {
+                val fallbackUrl = effectiveRequest.url.newBuilder().host("127.0.0.1").build()
+                val fallbackRequest = effectiveRequest.newBuilder().url(fallbackUrl).build()
+                val response = chain.proceed(fallbackRequest)
+                prefersLoopback = true
+                response
             } else {
                 throw e
             }

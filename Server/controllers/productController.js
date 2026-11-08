@@ -32,7 +32,8 @@ async function getProducts(req, res) {
     }
 
     const products = await Product.find(filter).sort(sortOption).lean();
-    const categories = ['All', 'Electronics', 'Footwear', 'Apparel', 'Accessories', 'Home'];
+    const dbCategories = await Product.distinct('category');
+    const categories = ['All', ...dbCategories];
 
     console.log(`[CATALOG] Returned ${products.length} products from MongoDB.`);
     res.json({
@@ -64,3 +65,4 @@ module.exports = {
   getProducts,
   getProductById
 };
+

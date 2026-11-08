@@ -67,5 +67,19 @@ class AuthRepository(
     fun logout() {
         secureStorage.clearSession()
     }
+
+    suspend fun getDemoAccount(): NetworkResult<DemoAccountResponse> {
+        return try {
+            val response = apiService.getDemoAccount()
+            if (response.isSuccessful && response.body() != null) {
+                NetworkResult.Success(response.body()!!)
+            } else {
+                val errorMsg = response.errorBody()?.string() ?: "Failed to fetch demo account"
+                NetworkResult.Error(response.code(), errorMsg)
+            }
+        } catch (e: Exception) {
+            NetworkResult.Exception(e)
+        }
+    }
 }
 

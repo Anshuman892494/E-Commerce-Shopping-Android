@@ -5,3 +5,4 @@ const cartController = require('../controllers/cartController');
 router.post('/validate', cartController.validateCart);
 
 module.exports = router;
+

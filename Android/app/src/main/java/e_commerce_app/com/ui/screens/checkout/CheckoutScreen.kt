@@ -35,6 +35,10 @@ fun CheckoutScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.loadUserAddress()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
