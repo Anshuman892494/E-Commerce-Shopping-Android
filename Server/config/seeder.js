@@ -50,3 +50,4 @@ async function seedDatabaseIfEmpty() {
 }
 
 module.exports = seedDatabaseIfEmpty;
+
