@@ -29,9 +29,9 @@ Use the pre-filled fields below to quickly copy-paste into the official Google F
 ### Section 3: Code & Version
 | Form Field | Value / Details |
 | :--- | :--- |
-| **Repository URL** | *[Your GitHub Repository Link, e.g. https://github.com/your-username/E-CommerceApp]* |
+| **Repository URL** | `https://github.com/Anshuman892494/E-Commerce-Shopping-Android` |
 | **Primary Branch** | `main` |
-| **Final Commit ID** | `acdcec3fb6f50305dbfe287558460b7136c0566a` |
+| **Final Commit ID** | `f8540726ce320aee36d8a41f98b6a8de6f60f56e` |
 | **Access Confirmation** | Public repository (or reviewer granted collaborator access) |
 
 ---
