@@ -4,106 +4,90 @@
 > **Candidate**: Anshul Sharma  
 > **Project**: E-Commerce Shopping Android Application  
 > **Target Video Length**: 3 to 4 Minutes  
+> **Backend Architecture**: Node.js REST API + **MongoDB (Mongoose ODM)**  
+> **Android Architecture**: Clean MVVM + Jetpack Compose (Material 3)
 
 ---
 
 ## 📹 Video Recording Setup
 1. **Screen 1 (Left / Main)**: Android Emulator (Pixel or equivalent running Android 14 / 15).
-2. **Screen 2 (Right / Background)**: Terminal window running `node server.js` showing real-time inventory and order logs.
+2. **Screen 2 (Right / Background)**: Terminal window running `node server.js` showing real-time MongoDB inventory updates and order logs.
 3. **Audio**: Clear microphone narration following the script below.
 
 ---
 
 ## ⏱️ Scene-by-Scene Script & Timestamps
 
-### Scene 1: Introduction & Clean Install (0:00 – 0:35)
+### Scene 1: Introduction, Clean Install & Splash Screen (0:00 – 0:35)
 - **Visual**: Show Android home screen. Open terminal and run:
   ```powershell
-  adb install -r Android/app/build/outputs/apk/debug/app-debug.apk
+  adb install -r release/app-debug.apk
   ```
+  - App launches $\rightarrow$ Show **Animated Splash Screen** with pulsating brand logo and tagline: *"Smart Shopping • Fast Delivery"*.
+  - Automatically transitions to the Welcome / Sign In screen.
 - **Spoken Script**:
   > *"Hello, my name is Anshul Sharma, and this is my submission for the Algions AI Labs Advanced Mobile App Assessment — the E-Commerce Shopping Android Application.*  
-  > *We begin with a clean install using our submitted debug APK. As you can see, the APK installs cleanly and launches immediately with our edge-to-edge Material 3 theme."*
+  > *We begin with a clean install using our submitted debug APK. Notice our animated splash screen that smoothly validates user session and guides us to sign in."*
 
 ---
 
-### Scene 2: Authentication & Secure Session (0:35 – 1:00)
-- **Visual**: App launches into Welcome / Auth Screen. 
+### Scene 2: Authentication & Secure Session (0:35 – 0:55)
+- **Visual**:
   - Tap **"Fill Demo Credentials"** (`demo@algions.com` / `Password123!`).
   - Point out password visibility toggle.
   - Tap **"Sign In"**. 
-  - Mention: Token is stored securely in `EncryptedSharedPreferences` with AES-256-GCM.
+  - Token is securely stored in `EncryptedSharedPreferences` with AES-256-GCM backed by Android Keystore.
 - **Spoken Script**:
-  > *"Here on the authentication screen, we have support for registration, standard login, and guest checkout. I'll click 'Fill Demo Credentials' and sign in. Notice how our session token is encrypted using Android Jetpack Security backed by Android Keystore, so credentials are never logged in cleartext."*
+  > *"I'll click 'Fill Demo Credentials' and sign in. Our session token is encrypted using Android Jetpack Security backed by Android Keystore, so sensitive tokens are never logged in cleartext."*
 
 ---
 
-### Scene 3: Product Discovery, Search & Variants (1:00 – 1:45)
+### Scene 3: 5-Tab Navigation, Wishlist & Promo Banner (0:55 – 1:40)
 - **Visual**:
-  - Show catalog with high quality images and stock badges.
-  - Type `"Headphones"` in search bar $\rightarrow$ instant debounced filtering. Clear search.
-  - Filter by category chips: tap **"Footwear"** $\rightarrow$ shows Nike shoes with "Only 2 left" badge.
-  - Open **"Sony WH-1000XM5 Headphones"** detail screen.
-  - Select Color swatch (Midnight Black $\rightarrow$ Platinum Silver).
-  - Select Size / Option.
-  - Increment quantity stepper from 1 to 2.
-  - Tap **"Add to Cart"** $\rightarrow$ Snackbar feedback appears: *"Item added to your shopping cart!"*.
-  - Show top bar cart badge updates to `2`.
+  - Point out the **Material 3 Bottom Navigation Bar** with 5 tabs: **Shop**, **Wishlist**, **Cart**, **Orders**, and **Profile**.
+  - Show the **Spring Offer Banner** with coupon code `ALGIONS20`.
+  - Type `"Nike"` in search bar $\rightarrow$ instant debounced filtering. Clear search.
+  - Tap the heart icon on Sony Headphones $\rightarrow$ heart turns red and Wishlist badge shows `1`.
+  - Switch to **Wishlist tab** $\rightarrow$ tap orange **"Move to Cart"** button $\rightarrow$ snackbar confirms item moved, wishlist badge updates, and cart badge becomes `1`.
 - **Spoken Script**:
-  > *"Now we are in product discovery. We have instant debounced search, category filtering, and stock status indicators. Opening the Sony Headphones, we can select color swatches and variant sizes. The stepper is dynamically bounded by server inventory. We'll add 2 units to the cart, and notice the instant visual feedback and badge update."*
+  > *"Here on the Shop screen, we have a 5-tab Material 3 bottom navigation bar, debounced search, category filtering, and promotional banners. Users can save items to their Wishlist with one tap, and move them to their shopping cart seamlessly with real-time reactive badge updates."*
 
 ---
 
-### Scene 4: Cart Management & Stock Validation (1:45 – 2:20)
+### Scene 4: Promo Coupon & Simulated Failure Safety Demonstration (1:40 – 2:40)
 - **Visual**:
-  - Tap Shopping Cart icon.
-  - Review items, variant descriptions, and price breakdown (Subtotal, Tax at 8%, Free Shipping over $100).
-  - Tap `+` and `-` to verify quantity adjustments.
-  - Tap **"Proceed to Checkout"**.
-- **Spoken Script**:
-  > *"In the shopping cart, our app executes an automatic stock validation call with the backend. It calculates subtotal, 8% sales tax, and free shipping for orders over \$100. We proceed to checkout."*
-
----
-
-### Scene 5: Acceptance Test Demonstration — Failure & Safety Cases (2:20 – 3:15)
-- **Visual**:
-  - Checkout screen displays pre-filled delivery address.
-  - Scroll to **"2. Payment Simulation Scenario"**.
-  - **Test Case A (Out of Stock Collision - 409)**:
+  - Switch to **Cart tab** $\rightarrow$ Tap **"Proceed to Checkout"**.
+  - Point out: Bottom navigation is hidden during checkout for distraction-free completion.
+  - In **"Promotional Discount"**, enter coupon `ALGIONS20` and tap **Apply**.
+  - Show: MongoDB verifies coupon, applies **20% discount** ($-\$32.00$), and grand total dynamically drops from $\$172.79 \rightarrow \$138.23$.
+  - **Rubric Safety Demonstration**:
     - Select **"🔴 Out-of-Stock Collision (409 Conflict)"**.
     - Tap **"Pay & Confirm"**.
-    - Notice: Button shows progress spinner; **app does NOT navigate to success**.
-    - Error alert appears: *"One or more items in your cart became out of stock."*
-    - Check terminal: Stock was **not** decremented. Cart was **not** cleared.
-  - **Test Case B (Card Declined - 402)**:
-    - Select **"🟡 Card Declined (402 Payment Required)"**.
-    - Tap **"Pay & Confirm"**.
-    - Error appears: *"Card was declined: Insufficient funds."* App recovers without crashing.
+    - Show: Button shows progress spinner; **app does NOT navigate to success**.
+    - Error banner appears gracefully without crash. Cart items remain preserved.
 - **Spoken Script**:
-  > *"Now demonstrating the core safety requirement of the assessment: the app must never confirm an order or deduct stock locally before the backend confirms it. First, I select the Out-of-Stock race condition. When I click Pay & Confirm, the app shows an authorizing loader, but halts upon receiving HTTP 409. As you see, no order is recorded locally, and our cart items are preserved. Similarly, testing Card Declined surfaces a 402 error gracefully without crashing."*
+  > *"In checkout, I'll enter our promo coupon ALGIONS20. The server validates it against MongoDB and instantly deducts 20% from the total. Now demonstrating the core assessment safety rule: the app must never confirm an order or deduct stock locally before the backend confirms it. Selecting Out-of-Stock Collision and tapping Pay & Confirm, the app shows an authorizing state, halts upon HTTP 409, and displays an actionable error without crashing or corrupting state."*
 
 ---
 
-### Scene 6: Successful Checkout, Server Stock Deduction & Live Tracking (3:15 – 3:55)
+### Scene 5: Server Confirmation, MongoDB Stock Decrement & Live Tracking (2:40 – 3:30)
 - **Visual**:
   - Select **"🟢 Normal Success (201 Created)"**.
   - Tap **"Pay & Confirm"**.
-  - Terminal shows: `[INVENTORY] Deducted 2 units... [ORDER] Created Order #ORD-XXXXX. Server Confirmed.`
+  - Check background terminal: MongoDB atomically decrements inventory: `[INVENTORY] Deducted 1 units... Remaining: 1`. Order document created in MongoDB.
   - App navigates to **OrderTrackingScreen**.
-  - Show green checkmark banner, Order ID, Estimated Delivery.
   - Show live order timeline: `Order Placed` $\rightarrow$ `Packed & Prepared` $\rightarrow$ `Shipped`.
-  - Tap **"All Orders"** $\rightarrow$ Show order in **OrderHistoryScreen**.
+  - Tap **"All Orders"** $\rightarrow$ Show order in **Orders tab**.
 - **Spoken Script**:
-  > *"Finally, we select Normal Success. Upon receiving HTTP 201 Created from the backend, stock is decremented server-side, the cart is cleared, and we transition to the Order Confirmation and Live Tracking screen. The timeline dynamically advances based on order status, and we can inspect our past orders anytime under My Orders."*
+  > *"Selecting Normal Success, the backend confirms the payment, atomically decrements stock in MongoDB, and returns HTTP 201 Created. The app then transitions to our live order tracking timeline, and stores the receipt in our MongoDB Orders collection."*
 
 ---
 
-### Scene 7: Offline Caching & Wrap-up (3:55 – 4:15)
+### Scene 6: User Profile & Dynamic Dark Mode Switch (3:30 – 4:00)
 - **Visual**:
-  - Enable Airplane mode on emulator.
-  - Return to Catalog: Amber banner **"Offline Mode — Displaying cached catalog"** appears.
-  - Cached products remain accessible.
-  - Disable Airplane mode: Data reconnects seamlessly.
+  - Switch to **Profile tab**.
+  - Show user avatar ("AD"), "Verified Buyer" badge, and delivery address editor.
+  - Toggle **Dark Mode switch** $\rightarrow$ App instantly transforms into a sleek Material 3 dark theme.
+  - Tap **Sign Out** $\rightarrow$ Confirm sign out dialog $\rightarrow$ Returns to Welcome screen.
 - **Spoken Script**:
-  > *"Lastly, toggling Airplane mode confirms that our local SQLite database retains the catalog and order history for seamless offline browsing. Thank you for reviewing my project!"*
-
+  > *"Finally, on the Profile screen, users can manage their saved addresses, jump to past orders, and toggle instantaneous Dark Mode. Clicking Sign Out clears secure session tokens and safely returns the user to the login screen. Thank you!"*

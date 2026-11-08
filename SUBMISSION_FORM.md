@@ -31,7 +31,7 @@ Use the pre-filled fields below to quickly copy-paste into the official Google F
 | :--- | :--- |
 | **Repository URL** | `https://github.com/Anshuman892494/E-Commerce-Shopping-Android` |
 | **Primary Branch** | `main` |
-| **Final Commit ID** | `f8540726ce320aee36d8a41f98b6a8de6f60f56e` |
+| **Final Commit ID** | `bc1faea5aced6940b2280fa2ecb81babdeed8c99` |
 | **Access Confirmation** | Public repository (or reviewer granted collaborator access) |
 
 ---
@@ -59,7 +59,7 @@ Use the pre-filled fields below to quickly copy-paste into the official Google F
 ### Section 6: Technology Stack & Limitations
 | Form Field | Value / Details |
 | :--- | :--- |
-| **Technology Stack** | **Android Client**: Kotlin 2.2, Jetpack Compose (Material 3), Navigation Compose, Retrofit 2, OkHttp 3, Gson, Coil Compose 2.7, Android SQLite (`SQLiteOpenHelper`), Android Jetpack Security (`EncryptedSharedPreferences`).<br/>**Backend**: Node.js, Express.js REST API with CORS and API Key authentication. |
+| **Technology Stack** | **Android Client**: Kotlin 2.2, Jetpack Compose (Material 3), Navigation Compose, 5-Tab Bottom Navigation, Animated Splash Screen, Retrofit 2, OkHttp 3, Gson, Coil Compose 2.7, Android SQLite (`SQLiteOpenHelper`) for offline products, cart and wishlist caching, Android Jetpack Security (`EncryptedSharedPreferences`).<br/>**Backend**: Node.js, Express.js REST API with **MongoDB Database (Mongoose ODM)**, API Key authentication, atomic stock inventory updates (`$inc: { stock: -qty }`), and promotional coupon validation. |
 | **Build & Setup Instructions** | **Backend**: `cd Server && npm install && npm start`<br/>**Android Unit Tests**: `cd Android && .\gradlew.bat test`<br/>**Android APK Build**: `cd Android && .\gradlew.bat assembleDebug`<br/>**APK Path**: `Android/app/build/outputs/apk/debug/app-debug.apk` |
 | **Known Incomplete Features / Assumptions** | Connects to a simulated sandbox payment gateway rather than production Stripe/Razorpay. Local SQLite database caches products, active cart across restarts, and order history. |
 

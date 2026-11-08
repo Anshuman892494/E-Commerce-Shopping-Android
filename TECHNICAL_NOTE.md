@@ -47,6 +47,7 @@ The application implements an **Offline-First Cache-Aside Strategy** using a loc
 | :--- | :--- | :--- | :--- |
 | `cached_products` | `id` (VARCHAR) | JSON payload of `Product` + `category` | Updated on every successful `GET /api/products`. Retained indefinitely for offline catalog browsing. |
 | `cart_items` | `variant_key` (VARCHAR) | Selected items, variant info, and quantity | Persisted in real-time. Survives complete app force-stops and reboots. |
+| `wishlist_items` | `product_id` (VARCHAR) | Bookmarked products for later purchase | Persisted locally in SQLite. Reactive StateFlow updates badge on 5-tab Bottom Navigation. |
 | `cached_orders` | `id` (VARCHAR) | Confirmed `Order` records and status | Written exclusively upon server `HTTP 201 Created` confirmation. Accessible offline. |
 
 ### 2.2 Distinguishing Offline Actions from Server-Confirmed State

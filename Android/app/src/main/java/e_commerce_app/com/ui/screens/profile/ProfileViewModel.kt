@@ -89,3 +89,4 @@ class ProfileViewModel(
         onLoggedOut()
     }
 }
+
