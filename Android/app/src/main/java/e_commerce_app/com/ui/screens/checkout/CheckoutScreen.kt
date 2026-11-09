@@ -75,7 +75,7 @@ fun CheckoutScreen(
                         Column {
                             Text("Total to Pay", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(
-                                "$${"%.2f".format(uiState.grandTotal)}",
+                                "₹${"%.2f".format(uiState.grandTotal)}",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
@@ -91,7 +91,7 @@ fun CheckoutScreen(
                                 .height(52.dp)
                                 .widthIn(min = 180.dp)
                                 .semantics {
-                                    contentDescription = "Place order for $${"%.2f".format(uiState.grandTotal)}"
+                                    contentDescription = "Place order for ₹${"%.2f".format(uiState.grandTotal)}"
                                 }
                         ) {
                             if (uiState.isPlacingOrder) {
@@ -403,7 +403,7 @@ fun CheckoutScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "$${"%.2f".format(item.subtotal)}",
+                                text = "₹${"%.2f".format(item.subtotal)}",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -414,30 +414,30 @@ fun CheckoutScreen(
 
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text("Items Subtotal", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("$${"%.2f".format(uiState.subtotal)}", style = MaterialTheme.typography.bodySmall)
+                        Text("₹${"%.2f".format(uiState.subtotal)}", style = MaterialTheme.typography.bodySmall)
                     }
                     if (uiState.discountAmount > 0) {
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text("Discount (${uiState.discountPercent.toInt()}%)", style = MaterialTheme.typography.bodySmall, color = SuccessGreen)
-                            Text("-$${"%.2f".format(uiState.discountAmount)}", style = MaterialTheme.typography.bodySmall, color = SuccessGreen, fontWeight = FontWeight.Bold)
+                            Text("-₹${"%.2f".format(uiState.discountAmount)}", style = MaterialTheme.typography.bodySmall, color = SuccessGreen, fontWeight = FontWeight.Bold)
                         }
                     }
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text("Shipping", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text(if (uiState.shipping == 0.0) "FREE" else "$${"%.2f".format(uiState.shipping)}", style = MaterialTheme.typography.bodySmall)
+                        Text(if (uiState.shipping == 0.0) "FREE" else "₹${"%.2f".format(uiState.shipping)}", style = MaterialTheme.typography.bodySmall)
                     }
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text("Estimated Tax", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("$${"%.2f".format(uiState.tax)}", style = MaterialTheme.typography.bodySmall)
+                        Text("₹${"%.2f".format(uiState.tax)}", style = MaterialTheme.typography.bodySmall)
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text("Grand Total", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         Text(
-                            "$${"%.2f".format(uiState.grandTotal)}",
+                            "₹${"%.2f".format(uiState.grandTotal)}",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary

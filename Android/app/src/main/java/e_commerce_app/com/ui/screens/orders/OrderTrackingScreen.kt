@@ -203,7 +203,7 @@ fun OrderTrackingScreen(
                     HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
                     Text("Payment Method:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("${order.paymentMethod} (Total: $${"%.2f".format(order.grandTotal)})", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                    Text("${order.paymentMethod} (Total: ₹${"%.2f".format(order.grandTotal)})", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                 }
             }
 

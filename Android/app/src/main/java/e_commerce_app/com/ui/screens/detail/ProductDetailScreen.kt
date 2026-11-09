@@ -167,7 +167,7 @@ fun ProductDetailScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = if (product.stock > 0) "Add to Cart • $${"%.2f".format(product.price * uiState.quantity)}" else "Out of Stock",
+                                text = if (product.stock > 0) "Add to Cart • ₹${"%.2f".format(product.price * uiState.quantity)}" else "Out of Stock",
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold
                             )
@@ -277,7 +277,7 @@ fun ProductDetailScreen(
                                 // Price row
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
-                                        text = "$${"%.2f".format(product.price)}",
+                                        text = "₹${"%.2f".format(product.price)}",
                                         style = MaterialTheme.typography.headlineMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.primary
@@ -285,7 +285,7 @@ fun ProductDetailScreen(
                                     if (product.originalPrice > product.price) {
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Text(
-                                            text = "$${"%.2f".format(product.originalPrice)}",
+                                            text = "₹${"%.2f".format(product.originalPrice)}",
                                             style = MaterialTheme.typography.titleMedium.copy(
                                                 textDecoration = TextDecoration.LineThrough
                                             ),

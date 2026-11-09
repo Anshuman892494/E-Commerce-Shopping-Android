@@ -168,7 +168,7 @@ fun OrderCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Total: $${"%.2f".format(order.grandTotal)}",
+                    text = "Total: ₹${"%.2f".format(order.grandTotal)}",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary

@@ -186,14 +186,14 @@ fun WishlistProductCard(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "$${"%.2f".format(product.price)}",
+                        text = "₹${"%.2f".format(product.price)}",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     if (product.originalPrice > product.price) {
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "$${"%.2f".format(product.originalPrice)}",
+                            text = "₹${"%.2f".format(product.originalPrice)}",
                             style = MaterialTheme.typography.bodySmall.copy(textDecoration = TextDecoration.LineThrough),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

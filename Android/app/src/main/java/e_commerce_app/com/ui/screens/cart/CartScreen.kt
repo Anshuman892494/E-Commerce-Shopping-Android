@@ -81,7 +81,7 @@ fun CartScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text("Subtotal", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text("$${"%.2f".format(uiState.subtotal)}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                            Text("₹${"%.2f".format(uiState.subtotal)}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(
@@ -90,7 +90,7 @@ fun CartScreen(
                         ) {
                             Text("Shipping", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(
-                                if (uiState.shipping == 0.0) "FREE" else "$${"%.2f".format(uiState.shipping)}",
+                                if (uiState.shipping == 0.0) "FREE" else "₹${"%.2f".format(uiState.shipping)}",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -101,7 +101,7 @@ fun CartScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text("Estimated Tax (8%)", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text("$${"%.2f".format(uiState.tax)}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                            Text("₹${"%.2f".format(uiState.tax)}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                         }
 
                         HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp))
@@ -113,7 +113,7 @@ fun CartScreen(
                         ) {
                             Text("Total Amount", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                             Text(
-                                "$${"%.2f".format(uiState.grandTotal)}",
+                                "₹${"%.2f".format(uiState.grandTotal)}",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
@@ -251,7 +251,7 @@ fun CartItemRow(
 
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "$${"%.2f".format(item.price)}",
+                    text = "₹${"%.2f".format(item.price)}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary

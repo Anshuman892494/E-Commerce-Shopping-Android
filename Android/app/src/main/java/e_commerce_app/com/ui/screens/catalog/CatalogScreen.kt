@@ -331,7 +331,7 @@ fun PromoBanner() {
                 )
 
                 Text(
-                    text = "Apply code at checkout • Free 4-day shipping over $100",
+                    text = "Apply code at checkout • Free 4-day shipping over ₹499",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White.copy(alpha = 0.9f)
                 )
@@ -357,7 +357,7 @@ fun ProductCard(
             .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick)
             .semantics {
-                contentDescription = "${product.title}, $${product.price}, ${if (product.stock > 0) "In Stock" else "Out of Stock"}"
+                contentDescription = "${product.title}, ₹${product.price}, ${if (product.stock > 0) "In Stock" else "Out of Stock"}"
             }
     ) {
         Column {
@@ -448,7 +448,7 @@ fun ProductCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "$${"%.2f".format(product.price)}",
+                        text = "₹${"%.2f".format(product.price)}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -456,7 +456,7 @@ fun ProductCard(
 
                     if (product.originalPrice > product.price) {
                         Text(
-                            text = "$${"%.2f".format(product.originalPrice)}",
+                            text = "₹${"%.2f".format(product.originalPrice)}",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 textDecoration = TextDecoration.LineThrough
                             ),
