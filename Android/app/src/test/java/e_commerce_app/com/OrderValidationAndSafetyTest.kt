@@ -69,10 +69,10 @@ class OrderValidationAndSafetyTest {
             imageUrl = "",
             quantity = 1
         )
-        // 20% discount on $100 -> $20 off -> discountedSubtotal $80
-        // Shipping: $9.99 (since discountedSubtotal <= $100)
-        // Tax: 8% of $80 = $6.40
-        // Grand Total: 80 + 9.99 + 6.40 = $96.39
+        // 20% discount on ₹100 -> ₹20 off -> discountedSubtotal ₹80
+        // Shipping: ₹9.99 (since discountedSubtotal <= ₹100)
+        // Tax: 8% of ₹80 = ₹6.40
+        // Grand Total: 80 + 9.99 + 6.40 = ₹96.39
         val stateWithCoupon = CheckoutUiState(
             items = listOf(item),
             appliedCoupon = "ALGIONS20",

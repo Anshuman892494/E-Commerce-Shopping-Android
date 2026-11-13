@@ -44,7 +44,7 @@ class CartLogicTest {
     }
 
     @Test
-    fun cartUiState_freeShippingAbove100Dollars() {
+    fun cartUiState_freeShippingAbove100() {
         val expensiveItem = CartItem(
             productId = "p1",
             title = "Expensive Item",

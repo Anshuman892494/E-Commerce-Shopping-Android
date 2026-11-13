@@ -17,6 +17,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import e_commerce_app.com.R
 import e_commerce_app.com.data.repository.AuthRepository
 import e_commerce_app.com.ui.theme.OrangeCTA
 import e_commerce_app.com.ui.theme.PrimaryBlue
@@ -68,21 +72,12 @@ fun SplashScreen(
                 .scale(scale.value)
                 .alpha(alpha.value)
         ) {
-            Surface(
-                modifier = Modifier.size(100.dp),
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primary,
-                shadowElevation = 8.dp
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Default.ShoppingBag,
-                        contentDescription = "Algions Shop Logo",
-                        tint = Color.White,
-                        modifier = Modifier.size(54.dp)
-                    )
-                }
-            }
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Algions Shop Logo",
+                modifier = Modifier.size(130.dp),
+                contentScale = ContentScale.Fit
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 

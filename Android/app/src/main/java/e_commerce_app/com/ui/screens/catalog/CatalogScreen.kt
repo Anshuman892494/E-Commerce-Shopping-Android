@@ -30,6 +30,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Image
+import e_commerce_app.com.R
 import e_commerce_app.com.data.model.Product
 import e_commerce_app.com.ui.components.*
 import e_commerce_app.com.ui.theme.*

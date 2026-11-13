@@ -1,5 +1,11 @@
 package e_commerce_app.com.ui.screens.auth
 
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.layout.ContentScale
+import e_commerce_app.com.R
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -46,17 +52,26 @@ fun AuthScreen(
             verticalArrangement = Arrangement.Center
         ) {
             // Brand Header
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Algions Shop Logo",
+                modifier = Modifier.size(110.dp),
+                contentScale = ContentScale.Fit
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "Algions",
-                    style = MaterialTheme.typography.displayLarge,
+                    style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = "Shop",
-                    style = MaterialTheme.typography.displayLarge,
+                    style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Light,
                     color = MaterialTheme.colorScheme.secondary
                 )
