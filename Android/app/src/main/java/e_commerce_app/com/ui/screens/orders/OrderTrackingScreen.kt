@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import e_commerce_app.com.data.model.Order
 import e_commerce_app.com.ui.theme.SuccessGreen
@@ -95,7 +96,9 @@ fun OrderTrackingScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
-                    modifier = Modifier.padding(20.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(
@@ -112,6 +115,7 @@ fun OrderTrackingScreen(
                         text = "Order Placed Successfully!",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
                         color = Color(0xFF14532D)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
@@ -119,12 +123,14 @@ fun OrderTrackingScreen(
                         text = "Order ID: #${order.id}",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
                         color = Color(0xFF166534)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Estimated Delivery: ${order.estimatedDelivery}",
                         style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
                         color = Color(0xFF166534)
                     )
                 }
