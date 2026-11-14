@@ -112,6 +112,7 @@ npm install
 npm start
 ```
 The server connects to MongoDB, auto-seeds the product catalog, demo user, and coupons, and listens on port 5000:
+- Live Deployed Render URL: `https://e-commerce-shopping-android-server.onrender.com`
 - Local URL: `http://localhost:5000`
 - Android Emulator URL: `http://10.0.2.2:5000` (or `127.0.0.1:5000` via ADB reverse tunnel)
 

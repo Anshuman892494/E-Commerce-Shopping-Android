@@ -40,7 +40,7 @@ Use the pre-filled fields below to quickly copy-paste into the official Google F
 | Form Field | Value / Details |
 | :--- | :--- |
 | **3–5 Minute Video Demo Link** | *[Google Drive / YouTube Unlisted link of the recording]* |
-| **Live Demo URL** | Local backend REST service at `http://localhost:5000` (or `http://10.0.2.2:5000` for Android emulator) |
+| **Live Demo URL** | `https://e-commerce-shopping-android-server.onrender.com` (Live on Render) / Local: `http://localhost:5000` |
 | **APK Download Link** | *[Google Drive Link or GitHub Release Link to `app-debug.apk`]* |
 | **Android Version / Device Tested** | Android 15 (API level 37), Pixel 10a Emulator (also tested down to minSdk 24 / Android 7.0) |
 
