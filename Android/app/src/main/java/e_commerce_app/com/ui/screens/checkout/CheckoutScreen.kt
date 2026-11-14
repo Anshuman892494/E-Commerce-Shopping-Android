@@ -103,9 +103,16 @@ fun CheckoutScreen(
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Text("Authorizing...", fontWeight = FontWeight.Bold)
                             } else {
-                                Icon(imageVector = Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Icon(
+                                    imageVector = if (uiState.paymentMethod == "COD") Icons.Default.CheckCircle else Icons.Default.Lock,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Pay & Confirm", fontWeight = FontWeight.Bold)
+                                Text(
+                                    text = if (uiState.paymentMethod == "COD") "Confirm Order (COD)" else "Pay & Place Order",
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
                     }
@@ -226,65 +233,64 @@ fun CheckoutScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Section 2: Assessment Simulation Mode Selector
+            // Section 2: Payment Method (UPI, COD, Card)
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(Color(0xFFCBD5E1))),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = Icons.Default.BugReport, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
+                        Icon(imageVector = Icons.Default.Payment, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "2. Payment Simulation Scenario",
+                            text = "2. Select Payment Method",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = "Use this to demonstrate rubric acceptance criteria (declined card, out-of-stock race, timeout).",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Option 1: UPI
+                    PaymentOptionCard(
+                        title = "⚡ UPI (Google Pay, PhonePe, Paytm)",
+                        subtitle = "Instant & direct checkout via any UPI app",
+                        selected = uiState.paymentMethod == "UPI",
+                        onClick = { viewModel.selectPaymentMethod("UPI") }
+                    ) {
+                        OutlinedTextField(
+                            value = uiState.upiId,
+                            onValueChange = viewModel::updateUpiId,
+                            label = { Text("Enter UPI ID") },
+                            placeholder = { Text("e.g. mobile@upi or yourname@oksbi") },
+                            singleLine = true,
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Option 2: Cash on Delivery (COD)
+                    PaymentOptionCard(
+                        title = "💵 Cash on Delivery (COD)",
+                        subtitle = "Pay cash at your doorstep when package arrives",
+                        selected = uiState.paymentMethod == "COD",
+                        onClick = { viewModel.selectPaymentMethod("COD") }
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
-                    SimulationRadioOption(
-                        title = "🟢 Normal Success (201 Created)",
-                        subtitle = "Server validates stock, charges card, confirms order.",
-                        selected = uiState.simulationMode == SimulationMode.NORMAL,
-                        onClick = { viewModel.setSimulationMode(SimulationMode.NORMAL) }
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    SimulationRadioOption(
-                        title = "🟡 Card Declined (402 Payment Required)",
-                        subtitle = "Simulates insufficient funds. App recovers without crash.",
-                        selected = uiState.simulationMode == SimulationMode.CARD_DECLINED,
-                        onClick = { viewModel.setSimulationMode(SimulationMode.CARD_DECLINED) }
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    SimulationRadioOption(
-                        title = "🔴 Out-of-Stock Collision (409 Conflict)",
-                        subtitle = "Simulates item sold out during checkout. Stock not deducted.",
-                        selected = uiState.simulationMode == SimulationMode.OUT_OF_STOCK,
-                        onClick = { viewModel.setSimulationMode(SimulationMode.OUT_OF_STOCK) }
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    SimulationRadioOption(
-                        title = "⏱️ Gateway Timeout / Drop (504)",
-                        subtitle = "Demonstrates network timeout handling & recovery.",
-                        selected = uiState.simulationMode == SimulationMode.TIMEOUT,
-                        onClick = { viewModel.setSimulationMode(SimulationMode.TIMEOUT) }
+                    // Option 3: Card
+                    PaymentOptionCard(
+                        title = "💳 Credit / Debit / ATM Card",
+                        subtitle = "Visa, Mastercard, RuPay & Maestro accepted",
+                        selected = uiState.paymentMethod == "CARD",
+                        onClick = { viewModel.selectPaymentMethod("CARD") }
                     )
                 }
             }
@@ -452,35 +458,39 @@ fun CheckoutScreen(
 }
 
 @Composable
-fun SimulationRadioOption(
+fun PaymentOptionCard(
     title: String,
     subtitle: String,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    content: (@Composable () -> Unit)? = null
 ) {
     Surface(
-        shape = RoundedCornerShape(10.dp),
-        color = if (selected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceVariant,
+        shape = RoundedCornerShape(12.dp),
+        color = if (selected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         border = if (selected) androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
     ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(
-                selected = selected,
-                onClick = onClick,
-                colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
-                Text(text = title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Column(modifier = Modifier.padding(14.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = selected,
+                    onClick = onClick,
+                    colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+            if (selected && content != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+                content()
             }
         }
     }

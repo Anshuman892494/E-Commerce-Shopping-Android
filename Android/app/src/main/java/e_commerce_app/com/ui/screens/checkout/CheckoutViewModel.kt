@@ -17,6 +17,8 @@ data class CheckoutUiState(
     val city: String = "",
     val postalCode: String = "",
     val phone: String = "",
+    val paymentMethod: String = "UPI", // "UPI", "COD", "CARD"
+    val upiId: String = "anshul@upi",
     val cardNumber: String = "4242 •••• •••• 4242",
     val cardExp: String = "12/28",
     val cardCvv: String = "888",
@@ -153,6 +155,14 @@ class CheckoutViewModel(
         }
     }
 
+    fun selectPaymentMethod(method: String) {
+        _uiState.update { it.copy(paymentMethod = method) }
+    }
+
+    fun updateUpiId(id: String) {
+        _uiState.update { it.copy(upiId = id) }
+    }
+
     fun setSimulationMode(mode: SimulationMode) {
         _uiState.update { it.copy(simulationMode = mode) }
     }
@@ -181,16 +191,26 @@ class CheckoutViewModel(
                 postalCode = current.postalCode,
                 phone = current.phone
             )
-            val payment = PaymentDetails(
-                method = "Simulated Card",
-                last4 = current.cardNumber.takeLast(4)
-            )
+            val payment = when (current.paymentMethod) {
+                "UPI" -> PaymentDetails(
+                    method = "UPI (${current.upiId.ifBlank { "instant@upi" }})",
+                    last4 = "UPI"
+                )
+                "COD" -> PaymentDetails(
+                    method = "Cash on Delivery (COD)",
+                    last4 = "COD"
+                )
+                else -> PaymentDetails(
+                    method = "Credit/Debit Card",
+                    last4 = current.cardNumber.takeLast(4)
+                )
+            }
 
             when (val result = orderRepository.placeOrder(
                 items = current.items,
                 address = address,
                 paymentDetails = payment,
-                simulationMode = current.simulationMode,
+                simulationMode = SimulationMode.NORMAL,
                 couponCode = current.appliedCoupon
             )) {
                 is NetworkResult.Success -> {
