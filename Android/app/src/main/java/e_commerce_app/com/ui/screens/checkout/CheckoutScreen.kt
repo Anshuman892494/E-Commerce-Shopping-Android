@@ -173,11 +173,11 @@ fun CheckoutScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("1. Delivery Address", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    }
+                    Text(
+                        text = "1. Delivery Address",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
 
                     Spacer(modifier = Modifier.height(14.dp))
 
@@ -241,21 +241,17 @@ fun CheckoutScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = Icons.Default.Payment, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "2. Select Payment Method",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    Text(
+                        text = "2. Select Payment Method",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
 
                     Spacer(modifier = Modifier.height(14.dp))
 
                     // Option 1: UPI
                     PaymentOptionCard(
-                        title = "⚡ UPI (Google Pay, PhonePe, Paytm)",
+                        title = "UPI (Google Pay, PhonePe, Paytm)",
                         subtitle = "Instant & direct checkout via any UPI app",
                         selected = uiState.paymentMethod == "UPI",
                         onClick = { viewModel.selectPaymentMethod("UPI") }
@@ -277,7 +273,7 @@ fun CheckoutScreen(
 
                     // Option 2: Cash on Delivery (COD)
                     PaymentOptionCard(
-                        title = "💵 Cash on Delivery (COD)",
+                        title = "Cash on Delivery (COD)",
                         subtitle = "Pay cash at your doorstep when package arrives",
                         selected = uiState.paymentMethod == "COD",
                         onClick = { viewModel.selectPaymentMethod("COD") }
@@ -287,7 +283,7 @@ fun CheckoutScreen(
 
                     // Option 3: Card
                     PaymentOptionCard(
-                        title = "💳 Credit / Debit / ATM Card",
+                        title = "Credit / Debit / ATM Card",
                         subtitle = "Visa, Mastercard, RuPay & Maestro accepted",
                         selected = uiState.paymentMethod == "CARD",
                         onClick = { viewModel.selectPaymentMethod("CARD") }
@@ -304,11 +300,11 @@ fun CheckoutScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = Icons.Default.ConfirmationNumber, contentDescription = null, tint = OrangeCTA)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Promotional Discount", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    }
+                    Text(
+                        text = "Promotional Discount",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
 
                     Spacer(modifier = Modifier.height(10.dp))
 
@@ -386,11 +382,11 @@ fun CheckoutScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ReceiptLong, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("3. Order Summary", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    }
+                    Text(
+                        text = "3. Order Summary",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
