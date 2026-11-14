@@ -24,7 +24,7 @@
 
 | Splash & Onboarding | Discovery & Search | Product Details | Cart & Quantity |
 | :---: | :---: | :---: | :---: |
-| <img src="screenshots/Splash.png" width="190"/> | <img src="screenshots/Home.png" width="190"/> | <img src="screenshots/Product%20Details.png" width="190"/> | <img src="screenshots/Cart.png" width="190"/> |
+| <img src="screenshots/Splash.jpeg" width="190"/> | <img src="screenshots/Home.png" width="190"/> | <img src="screenshots/Product%20Details.png" width="190"/> | <img src="screenshots/Cart.png" width="190"/> |
 
 | Wishlist Bookmarks | Real UPI / COD Checkout | Live Order Tracking | Dark Mode Support |
 | :---: | :---: | :---: | :---: |
