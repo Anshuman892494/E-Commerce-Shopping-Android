@@ -276,7 +276,13 @@ fun AppNavigation(
                 val ordersUiState by ordersVm.uiState.collectAsState()
 
                 LaunchedEffect(orderId) {
-                    ordersVm.loadOrderById(orderId)
+                    while (true) {
+                        ordersVm.loadOrderById(orderId)
+                        if (ordersVm.uiState.value.selectedOrder?.status == "DELIVERED") {
+                            break
+                        }
+                        kotlinx.coroutines.delay(4000)
+                    }
                 }
 
                 val currentOrder = ordersUiState.selectedOrder

@@ -114,14 +114,39 @@ async function createOrder(req, res) {
 }
 
 /**
+ * Calculates dynamic lifecycle status based on order age:
+ * 0 - 20s   -> CONFIRMED (Order Placed)
+ * 20 - 50s  -> PROCESSING (Packed & Prepared in warehouse)
+ * 50 - 90s  -> SHIPPED (Carrier picked up, in transit)
+ * 90s+      -> DELIVERED (Package safely delivered to recipient)
+ */
+function computeDynamicStatus(order) {
+  if (!order || order.status === 'FAILED') return order ? order.status : 'CONFIRMED';
+  const ageSeconds = (Date.now() - new Date(order.createdAt).getTime()) / 1000;
+  if (ageSeconds > 90) {
+    return 'DELIVERED';
+  } else if (ageSeconds > 50) {
+    return 'SHIPPED';
+  } else if (ageSeconds > 20) {
+    return 'PROCESSING';
+  } else {
+    return 'CONFIRMED';
+  }
+}
+
+/**
  * GET /api/orders
  */
 async function getOrders(req, res) {
   try {
     const orders = await Order.find({}).sort({ createdAt: -1 }).lean();
+    const dynamicOrders = orders.map(o => ({
+      ...o,
+      status: computeDynamicStatus(o)
+    }));
     res.json({
-      orders,
-      total: orders.length
+      orders: dynamicOrders,
+      total: dynamicOrders.length
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -138,21 +163,9 @@ async function getOrderById(req, res) {
       return res.status(404).json({ error: 'Order not found.' });
     }
 
-    const ageSeconds = (Date.now() - new Date(order.createdAt).getTime()) / 1000;
-    let dynamicStatus = order.status;
-    if (order.status !== 'FAILED') {
-      if (ageSeconds > 60) {
-        dynamicStatus = 'SHIPPED';
-      } else if (ageSeconds > 25) {
-        dynamicStatus = 'PROCESSING';
-      } else {
-        dynamicStatus = 'CONFIRMED';
-      }
-    }
-
     res.json({
       ...order,
-      status: dynamicStatus
+      status: computeDynamicStatus(order)
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
