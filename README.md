@@ -278,6 +278,58 @@ npm start
 
 ---
 
+## 🔮 Roadmap & Future Scope
+
+To scale **Algions Shop** into an enterprise-grade production platform, the following strategic enhancements are architected for upcoming releases:
+
+### 1. 🛒 Smart Abandoned Cart Recovery & Re-Engagement Push Notifications
+Cart abandonment is one of the highest friction points in modern e-commerce (~70% industry average). We have designed an automated, intelligent re-engagement engine:
+* **Architecture**: Powered by **Android `WorkManager`** (periodic local scheduling) paired with **Firebase Cloud Messaging (FCM)** and backend cron jobs.
+* **Multi-Stage Retention Pipeline**:
+  * **Stage 1 (Gentle Nudge — 2 Hours)**:  
+    > *"Hey! You left items waiting in your shopping cart. 🛍️ Complete your order now before they sell out!"*
+  * **Stage 2 (Stock Scarcity Warning — 12 Hours)**:  
+    > *"🔥 High Demand Alert: Only 2 units left for items in your cart. Secure yours before stock runs out!"*
+  * **Stage 3 (Promotional Profit & Incentive — 24 Hours)**:  
+    > *"🎉 Exclusive 2-Hour Deal: Complete your purchase within the next 2 hours and unlock an extra 10% instant discount with code `CART10`! Save ₹350 on your order."*
+* **Dynamic Deep Linking**: Tapping the notification deep-links straight into the `CartScreen` or pre-filled `CheckoutScreen` with the promotional code auto-applied for seamless, 1-tap checkout conversion.
+
+```mermaid
+flowchart LR
+    A["User Adds Items to Cart"] --> B{"Checkout Completed?"}
+    B -- "Yes" --> C["Order Confirmed (HTTP 201)"]
+    B -- "No (> 2 Hours)" --> D["WorkManager / FCM Notification<br/>'You left items in your cart!'"]
+    D --> E{"Still Inactive (> 24h)?"}
+    E -- "Yes" --> F["Exclusive Promo Push<br/>'Use code CART10 & Save ₹350!'"]
+    F --> G["Deep-Link to Cart<br/>Auto-Apply Discount"]
+    G --> C
+```
+
+---
+
+### 2. 💳 Production Payment Gateways (Razorpay & UPI Intent)
+* Direct app-to-app UPI Intent launching (Google Pay, PhonePe, Paytm, BHIM) using `upi://pay` URI schemes for zero-redirect payments.
+* Integration of production **Razorpay Android SDK** with webhook callbacks for instant payment settlement.
+
+---
+
+### 3. 📍 Live GPS Map Delivery Rider Tracking
+* Integration of **Google Maps Android SDK** within the `OrderTrackingScreen`.
+* Real-time WebSocket / Firebase Realtime Database integration displaying the delivery rider's live bike location and route polyline with accurate ETA updates.
+
+---
+
+### 4. 🤖 AI-Powered Product Recommendations (Algions AI)
+* Machine learning-driven **"Frequently Bought Together"** and **"Customers Also Viewed"** collaborative filtering models.
+* Dynamic personalized carousels based on user browsing history and category affinities.
+
+---
+
+### 5. ⭐ Customer Reviews, Ratings & Media Uploads
+* Verified Buyer badge reviews with star ratings and photo/video attachments uploaded to AWS S3 / Cloudinary.
+
+---
+
 ## 📄 License & Attribution
 Developed by **Anshul Sharma** for the **Algions AI Labs Private Limited** Advanced Individual Project Assessment.  
 Product imagery courtesy of [Unsplash](https://unsplash.com) under the free Unsplash license. Material 3 icons courtesy of AndroidX Material Icons.
